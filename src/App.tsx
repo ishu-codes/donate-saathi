@@ -1,6 +1,13 @@
 import { Routes, Route } from "react-router-dom";
-import { Home, LandingPage } from "./components";
-import Layout from "./components/layout";
+import {
+  LandingPage,
+  Layout,
+  Home,
+  NewDonation,
+  Recent,
+  Settings,
+  Logout,
+} from "./components";
 
 function App() {
   return (
@@ -18,10 +25,27 @@ function App() {
         path="new-donation"
         element={
           <Layout>
-            <Home />
+            <NewDonation />
           </Layout>
         }
       />
+      <Route
+        path="recent"
+        element={
+          <Layout>
+            <Recent />
+          </Layout>
+        }
+      />
+      <Route
+        path="settings"
+        element={
+          <Layout>
+            <Settings />
+          </Layout>
+        }
+      />
+      <Route path="logout" element={<Logout />} />
     </Routes>
   );
 }
