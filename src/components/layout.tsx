@@ -5,7 +5,7 @@ import Sidebar from "./sidebar";
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="w-full h-screen flex">
-      <div className="w-60 h-full flex flex-col px-4 py-6 border-r-2 border-border">
+      <div className="w-72 h-full flex flex-col px-2 py-6 border-r-2 border-border">
         <Sidebar />
       </div>
       <div className="w-full flex flex-col">
