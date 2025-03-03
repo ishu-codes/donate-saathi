@@ -4,13 +4,13 @@ import Sidebar from "./sidebar";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <div className="w-full h-screen flex">
-      <div className="w-72 h-full flex flex-col px-2 py-6 border-r-2 border-border">
+    <div className="w-full h-screen flex bg-primary">
+      <div className="w-72 h-full flex flex-col py-6 bg-primary">
         <Sidebar />
       </div>
-      <div className="w-full flex flex-col">
+      <div className="w-full flex flex-col bg-secondary">
         <Navbar />
-        <main className="p-4">{children}</main>
+        <main className="w-full flex-1 p-8">{children}</main>
       </div>
     </div>
   );
