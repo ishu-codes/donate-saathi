@@ -8,6 +8,7 @@ import {
   Settings,
   Logout,
 } from "./components";
+import { Login, Register } from "./components/auth";
 
 function App() {
   return (
@@ -46,6 +47,8 @@ function App() {
         }
       />
       <Route path="logout" element={<Logout />} />
+      <Route path="register" element={<Register />} />
+      <Route path="login" element={<Login />} />
     </Routes>
   );
 }

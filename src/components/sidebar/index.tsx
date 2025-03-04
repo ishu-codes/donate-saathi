@@ -15,7 +15,7 @@ export default function Sidebar() {
       <div className="h-full flex flex-col gap-10">
         <Link className="px-4" to="/">
           <picture className="h-4">
-            <img src="/logo.svg" alt="Logo" className="h-full" />
+            <img src="/icon.png" alt="Logo" className="w-16" />
           </picture>
         </Link>
 
@@ -24,8 +24,8 @@ export default function Sidebar() {
             <Link
               className={`flex gap-2 px-6 py-3 hover:bg-accent ${
                 location.pathname === nav.url
-                  ? "text-brand border-r-2 border-brand pointer-events-none"
-                  : "text-secondary-foreground"
+                  ? "border-r-2 border-brand pointer-events-none"
+                  : "text-muted-foreground"
               }`}
               to={nav.url}
               key={idx}

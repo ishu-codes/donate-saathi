@@ -4,8 +4,8 @@ import Sidebar from "./sidebar";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <div className="w-full h-screen flex bg-primary">
-      <div className="w-72 h-full flex flex-col py-6 bg-primary">
+    <div className="w-full h-screen flex">
+      <div className="w-72 h-full flex flex-col py-6">
         <Sidebar />
       </div>
       <div className="w-full flex flex-col bg-secondary">
