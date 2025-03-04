@@ -60,14 +60,14 @@ export default function Slider() {
 
         {/* Navigation Buttons */}
         <button
-          className="absolute top-1/2 -translate-y-1/2 -left-[70px] bg-white text-red-600 border-none w-10 h-10 rounded-full cursor-pointer z-10 text-lg flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.15)] transition-all duration-300 hover:scale-110 hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)] sm:w-9 sm:h-9 sm:text-base sm:left-2.5"
+          className="absolute top-1/2 -translate-y-1/2 -left-[70px] bg-white text-red-600 border-none w-10 h-10 rounded-full cursor-pointer text-lg flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.15)] transition-all duration-300 hover:scale-110 hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)] sm:w-9 sm:h-9 sm:text-base sm:left-2.5 z-20"
           onClick={prevSlide}
           aria-label="Previous slide"
         >
           <FaChevronLeft />
         </button>
         <button
-          className="absolute top-1/2 -translate-y-1/2 -right-[70px] bg-white text-red-600 border-none w-10 h-10 rounded-full cursor-pointer z-10 text-lg flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.15)] transition-all duration-300 hover:scale-110 hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)] sm:w-9 sm:h-9 sm:text-base sm:right-2.5"
+          className="absolute top-1/2 -translate-y-1/2 -right-[70px] bg-white text-red-600 border-none w-10 h-10 rounded-full cursor-pointer text-lg flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.15)] transition-all duration-300 hover:scale-110 hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)] sm:w-9 sm:h-9 sm:text-base sm:right-2.5 z-20"
           onClick={nextSlide}
           aria-label="Next slide"
         >
