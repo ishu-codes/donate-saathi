@@ -1,4 +1,5 @@
-// Sample data
+import { NGO } from "@/interfaces";
+
 export const categories = [
   {
     name: "No Child Orphaned",
@@ -101,4 +102,69 @@ export const partners = [
   { name: "Marathwada Navnirman", logo: "/marathwada-logo.png" },
   { name: "Tomorrow's Foundation", logo: "/tomorrow-logo.png" },
   { name: "Simple Education", logo: "/simple-education-logo.png" },
+];
+export const NGOs: NGO[] = [
+  {
+    id: "1",
+    name: "Akshaya Patra Foundation",
+    description:
+      "World's largest NGO-run school meal programme serving millions of children",
+    category: ["food", "education"],
+    location: "Bengaluru, Karnataka",
+    email: "contact@akshayapatra.org",
+    phone: "+91-80-2782-0700",
+    website: "www.akshayapatra.org",
+  },
+  {
+    id: "2",
+    name: "Pratham",
+    description:
+      "Innovative learning solutions to improve quality of education",
+    category: ["education"],
+    location: "Mumbai, Maharashtra",
+    email: "info@pratham.org",
+    phone: "+91-22-2481-1919",
+    website: "www.pratham.org",
+  },
+  {
+    id: "3",
+    name: "CRY - Child Rights and You",
+    description:
+      "Ensuring happy, healthy, and creative childhoods for Indian children",
+    category: ["children", "education"],
+    location: "Mumbai, Maharashtra",
+    email: "support@cry.org",
+    phone: "+91-22-2308-1040",
+    website: "www.cry.org",
+  },
+  {
+    id: "4",
+    name: "Goonj",
+    description: "Turning urban surplus into rural development opportunities",
+    category: ["clothing", "disaster-relief"],
+    location: "New Delhi, Delhi",
+    email: "mail@goonj.org",
+    phone: "+91-11-2616-1915",
+    website: "www.goonj.org",
+  },
+  {
+    id: "5",
+    name: "Give India Foundation",
+    description: "Bridging the gap between donors and credible NGOs",
+    category: ["poverty-alleviation"],
+    location: "Bangalore, Karnataka",
+    email: "info@giveindia.org",
+    phone: "+91-80-4090-6345",
+    website: "www.giveindia.org",
+  },
+  {
+    id: "6",
+    name: "Smile Foundation",
+    description: "Working for education, healthcare, and women empowerment",
+    category: ["education", "medical", "women-empowerment"],
+    location: "New Delhi, Delhi",
+    email: "info@smilefoundationindia.org",
+    phone: "+91-11-4310-7070",
+    website: "www.smilefoundationindia.org",
+  },
 ];

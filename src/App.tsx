@@ -9,6 +9,7 @@ import {
   Logout,
 } from "./components";
 import { Login, Register } from "./components/auth";
+import { Discover } from "./components/Discover";
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
       <Route path="logout" element={<Logout />} />
       <Route path="register" element={<Register />} />
       <Route path="login" element={<Login />} />
+      <Route path="discover-ngos" element={<Discover />} />
     </Routes>
   );
 }
