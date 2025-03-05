@@ -7,6 +7,8 @@ export const categories = [
     count: "₹25,65,503 raised, ₹24L left",
     donations: "1859 Donations",
     taxBenefits: "Tax Benefits Available",
+    backgroundImage:
+      "https://www.humanium.org/en/wp-content/uploads/2024/09/shutterstock_1315203182-1024x576.jpg",
   },
   {
     name: "Feed the Hungry",
@@ -14,6 +16,8 @@ export const categories = [
     count: "Help feed those in need",
     donations: "donate a meal today!",
     taxBenefits: "Tax Benefits Available",
+    backgroundImage:
+      "https://food-ubc.b-cdn.net/wp-content/uploads/2022/04/AdobeStock_270993782-scaled.jpeg",
   },
   {
     name: "Protect Abandoned Elders",
@@ -21,6 +25,8 @@ export const categories = [
     count: "Support elderly care",
     donations: "Pledge Monthly",
     taxBenefits: "Tax Benefits Available",
+    backgroundImage:
+      "https://india.unfpa.org/sites/default/files/styles/original/public/news/homepage_card_cover_1000_x_560_2_1.png?itok=v8cdIU9T",
   },
   // Add more categories as needed
 ];
@@ -166,5 +172,38 @@ export const NGOs: NGO[] = [
     email: "info@smilefoundationindia.org",
     phone: "+91-11-4310-7070",
     website: "www.smilefoundationindia.org",
+  },
+];
+
+export const CAMPAIGNS = [
+  {
+    title: "Help Children Get Education",
+    description:
+      "Support underprivileged children with quality education and learning materials.",
+    image:
+      "https://www.unicefusa.org/sites/default/files/2023-02/UNI122739.jpg",
+    raised: 75000,
+    goal: 100000,
+    daysLeft: 15,
+  },
+  {
+    title: "Feed the Hungry",
+    description:
+      "Provide nutritious meals to families facing food insecurity in rural communities.",
+    image:
+      "https://ofhsoupkitchen.org/wp-content/uploads/2023/03/bible-feeding-hungry-1.jpg",
+    raised: 45000,
+    goal: 80000,
+    daysLeft: 20,
+  },
+  {
+    title: "Medical Aid for Elderly",
+    description:
+      "Support healthcare and medical supplies for senior citizens in need.",
+    image:
+      "https://partnersforhomecare.ca/wp-content/uploads/2017/07/Hire-Home-Health-Nursing-For-Seniors-For-Your-Family-Member.png",
+    raised: 90000,
+    goal: 150000,
+    daysLeft: 10,
   },
 ];

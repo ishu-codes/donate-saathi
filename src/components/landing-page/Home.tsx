@@ -17,7 +17,7 @@ import {
 } from "react-icons/fa";
 import Slider from "./Slider";
 
-import { TESTIMONIALS, categories, steps, partners } from "./data";
+import { TESTIMONIALS, categories, steps, partners, CAMPAIGNS } from "./data";
 import { BookHeart } from "lucide-react";
 
 export default function Home() {
@@ -26,34 +26,56 @@ export default function Home() {
       <Slider />
 
       {/* Categories Section */}
-      <section className="py-16 px-8 bg-gradient-to-b from-slate-50 to-white">
-        <h2 className="text-4xl font-bold text-slate-800 text-center mb-12 relative inline-block left-1/2 -translate-x-1/2 after:content-[''] after:absolute after:bottom-[-10px] after:left-0 after:w-full after:h-[3px] after:bg-gradient-to-r after:from-transparent after:via-red-600 after:to-transparent">
+      <section className="py-24 px-8 bg-gradient-to-b from-blue-50 via-white to-rose-50">
+        <h2 className="text-4xl font-bold text-slate-800 text-center mb-16 relative inline-block left-1/2 -translate-x-1/2">
           Browse by Category
+          <span className="absolute left-1/2 -translate-x-1/2 bottom-[-12px] w-24 h-1 bg-red-600 rounded-full"></span>
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto p-4">
           {categories.map((category, index) => (
             <motion.div
               key={index}
-              className="relative rounded-2xl overflow-hidden shadow-lg cursor-pointer min-h-[220px] flex flex-col justify-end bg-cover bg-center group"
+              className="relative rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer min-h-[280px] flex flex-col justify-end group"
               style={{
-                backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/campaign-bg.jpg')`,
+                backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('${category.backgroundImage}')`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
               }}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
+              whileHover={{ y: -5 }}
             >
-              <div className="relative z-10 p-10 text-white">
-                <span className="text-sm italic text-white/90 mb-4 inline-block border-b border-white/30 pb-0.5">
+              <div className="relative z-10 p-8 transform transition-transform duration-300 group-hover:translate-y-[-8px]">
+                <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm text-sm text-white/90 mb-4 border border-white/20">
                   {category.mission}
                 </span>
-                <h3 className="text-3xl font-bold mb-4 text-white leading-tight shadow-text">
+                <h3 className="text-2xl font-bold mb-3 text-white leading-tight">
                   {category.name}
                 </h3>
-                <p className="text-lg text-white/95 mb-3 leading-relaxed">
+                <p className="text-lg text-white/95 mb-2 leading-relaxed">
                   {category.count}
                 </p>
-                <p className="text-base text-white/85">{category.donations}</p>
+                <div className="flex items-center justify-between mt-4">
+                  <p className="text-base text-white/85">
+                    {category.donations}
+                  </p>
+                  <motion.svg
+                    className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                    whileHover={{ x: 5 }}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </motion.svg>
+                </div>
               </div>
             </motion.div>
           ))}
@@ -66,33 +88,39 @@ export default function Home() {
           Featured Campaigns
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {[1, 2, 3].map((campaign) => (
+          {CAMPAIGNS.map((campaign, index) => (
             <motion.div
-              key={campaign}
+              key={index}
               className="bg-white rounded-lg overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300"
               whileHover={{ y: -10 }}
             >
-              <div className="h-48 bg-slate-200"></div>
+              <div
+                className="h-48 bg-slate-200 bg-cover bg-center"
+                style={{ backgroundImage: `url(${campaign.image})` }}
+              ></div>
               <div className="p-6">
                 <h3 className="text-xl font-semibold mb-4 text-slate-800">
-                  Help Children Get Education
+                  {campaign.title}
                 </h3>
-                <p className="text-slate-600 mb-6">
-                  Support underprivileged children with quality education and
-                  learning materials.
-                </p>
+                <p className="text-slate-600 mb-6">{campaign.description}</p>
                 <div className="mb-6">
                   <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                    <div className="h-full w-3/4 bg-red-600 rounded-full"></div>
+                    <div
+                      className="h-full bg-red-600 rounded-full"
+                      style={{
+                        width: `${(campaign.raised / campaign.goal) * 100}%`,
+                      }}
+                    ></div>
                   </div>
                   <div className="flex justify-between mt-2 text-sm text-slate-500">
-                    <span>₹75,000 raised</span>
-                    <span>of ₹100,000</span>
+                    <span>₹{campaign.raised.toLocaleString()} raised</span>
+                    <span>of ₹{campaign.goal.toLocaleString()}</span>
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="flex items-center text-slate-500 text-sm">
-                    <FaRegClock className="mr-2" /> 15 days left
+                    <FaRegClock className="mr-2" /> {campaign.daysLeft} days
+                    left
                   </span>
                   <button className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
                     Donate Now <FaArrowRight />
