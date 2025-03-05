@@ -56,3 +56,14 @@ export type NGO = {
   phone: string;
   website?: string;
 };
+
+export type DonatingEntity = {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  image: string;
+  impact: string;
+  location: string;
+  urgencyLevel: "High" | "Medium" | "Low";
+};

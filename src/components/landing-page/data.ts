@@ -1,4 +1,4 @@
-import { NGO } from "@/interfaces";
+import { DonatingEntity, NGO } from "@/interfaces";
 
 export const categories = [
   {
@@ -205,5 +205,78 @@ export const CAMPAIGNS = [
     raised: 90000,
     goal: 150000,
     daysLeft: 10,
+  },
+];
+
+export const donatingEntities: DonatingEntity[] = [
+  {
+    id: "1",
+    name: "Food For All",
+    category: "food",
+    description:
+      "Providing fresh, nutritious meals to underprivileged communities.",
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Good_Food_Display_-_NCI_Visuals_Online.jpg/1200px-Good_Food_Display_-_NCI_Visuals_Online.jpg",
+    impact: "Served 100,000+ meals in 2023",
+    location: "Mumbai, Delhi, Bangalore",
+    urgencyLevel: "High",
+  },
+  {
+    id: "2",
+    name: "Clothes That Care",
+    category: "clothing",
+    description: "Collecting and distributing clean clothes to those in need.",
+    image:
+      "https://cdn.prod.website-files.com/5d6fe845a10b7881ddcc9c9c/635639544d0d414c0bad916d_Picture15.png",
+    impact: "Helped 50,000+ individuals",
+    location: "Pan India",
+    urgencyLevel: "Medium",
+  },
+  {
+    id: "3",
+    name: "Shelter Hope",
+    category: "shelter",
+    description:
+      "Emergency shelter and housing support for homeless individuals.",
+    image:
+      "https://www.hindustantimes.com/ht-img/img/2023/12/05/550x309/DUSIB-already-runs-197-permanent-shelter-homes--wh_1701799334303.jpg",
+    impact: "Provided shelter to 10,000+ people",
+    location: "Delhi NCR",
+    urgencyLevel: "High",
+  },
+  {
+    id: "4",
+    name: "EduSupply Connect",
+    category: "education",
+    description:
+      "Collecting and distributing educational materials to rural schools.",
+    image:
+      "https://img.freepik.com/free-vector/notebooks-writing-tools-vector-illustrations-set_778687-1592.jpg",
+    impact: "Supported 200+ schools",
+    location: "Karnataka, Tamil Nadu",
+    urgencyLevel: "Medium",
+  },
+  {
+    id: "5",
+    name: "MedAid Direct",
+    category: "medical",
+    description: "Redistributing unused medical supplies to clinics in need.",
+    image:
+      "https://img.freepik.com/premium-photo/set-diverse-medical-items-means-prevention-personal-hygiene-treatment-symptoms-coronavirus_164638-7153.jpg?semt=ais_hybrid",
+    impact: "Helped 25,000+ patients",
+    location: "Pan India",
+    urgencyLevel: "High",
+  },
+  {
+    id: "6",
+    name: "Books for All",
+    category: "education",
+    description:
+      "Sharing knowledge through book donations to libraries and schools.",
+    image:
+      "https://www.clankart.com/user-uploads/advert/Senior_MPC_Intermediate_Workbooks_and_Study_MaterialIPEEAMCETJEE1715848755178.jpg",
+    impact: "Donated 50,000+ books",
+    location: "Maharashtra, Gujarat",
+    urgencyLevel: "Low",
   },
 ];

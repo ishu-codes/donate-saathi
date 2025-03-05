@@ -1,7 +1,7 @@
 // import { NGO } from "../interfaces";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { NGOs } from "./landing-page/data";
+import { NGOs } from "../landing-page/data";
 
 const categories = Array.from(new Set(NGOs.flatMap((ngo) => ngo.category)));
 

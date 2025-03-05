@@ -9,7 +9,8 @@ import {
   Logout,
 } from "./components";
 import { Login, Register } from "./components/auth";
-import { Discover } from "./components/Discover";
+import { Discover } from "./components/info/Discover";
+import FindDonations from "./components/info/FindDonations";
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
       <Route path="register" element={<Register />} />
       <Route path="login" element={<Login />} />
       <Route path="discover-ngos" element={<Discover />} />
+      <Route path="find-donations" element={<FindDonations />} />
     </Routes>
   );
 }
