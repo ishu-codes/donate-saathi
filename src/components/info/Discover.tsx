@@ -1,23 +1,35 @@
-// import { NGO } from "../interfaces";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useState } from "react";
-import { NGOs } from "../landing-page/data";
-
-const categories = Array.from(new Set(NGOs.flatMap((ngo) => ngo.category)));
+import { useNgos } from "@/hooks/db";
+import { NGOsInterface } from "@/interface";
 
 export function Discover() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filteredNGOs, setFilteredNGOs] = useState<NGOsInterface[]>([]);
+  const [categories, setCategories] = useState<string[]>();
 
-  const filteredNGOs = NGOs.filter((ngo) => {
-    const matchesCategory = selectedCategory
-      ? ngo.category.includes(selectedCategory)
-      : true;
-    const matchesSearch =
-      ngo.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ngo.description.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const { data: ngos, isLoading, error } = useNgos();
+
+  useEffect(() => {
+    let cates: string[] = [];
+    const newNGOS = ngos?.filter((ngo) => {
+      cates = cates.concat(ngo.tags);
+      const matchesCategory = selectedCategory
+        ? ngo.tags.includes(selectedCategory)
+        : true;
+      const matchesSearch =
+        ngo.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        ngo.description.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+    console.log(cates);
+    setFilteredNGOs(newNGOS ?? []);
+    setCategories(Array.from(new Set(cates)) ?? []);
+  }, [selectedCategory, ngos, searchTerm]);
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-6">
@@ -56,7 +68,7 @@ export function Discover() {
               >
                 All
               </button>
-              {categories.map((category) => (
+              {categories?.map((category) => (
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
@@ -77,7 +89,7 @@ export function Discover() {
           layout
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {filteredNGOs.map((ngo, index) => (
+          {filteredNGOs?.map((ngo, index) => (
             <motion.div
               key={ngo.id}
               layout
@@ -112,7 +124,7 @@ export function Discover() {
                 )}
               </div>
               <div className="mt-4 flex flex-wrap gap-2">
-                {ngo.category.map((cat) => (
+                {ngo.tags.map((cat) => (
                   <span
                     key={cat}
                     className="px-2 py-1 bg-purple-100 text-purple-600 rounded-full text-xs"

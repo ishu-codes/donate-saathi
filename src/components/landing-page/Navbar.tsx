@@ -35,7 +35,7 @@ export default function Navbar() {
             {/* Logo */}
             <div className="flex-shrink-0">
               {/* <img className="h-8 w-auto" src="/logo.png" alt="DonateSaathi" /> */}
-              <span className="text-xl font-bold text-gray-800">
+              <span className="text-3xl font-bold text-red-600">
                 DonateSaathi
               </span>
             </div>

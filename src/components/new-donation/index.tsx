@@ -1,233 +1,358 @@
-import { useState } from "react";
-import { Upload, MapPin } from "lucide-react";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { Upload, MapPin, Loader2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { DonationCategories } from "@/interfaces";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Form,
-  FormControl,
-  FormDescription,
-  FormField,
   FormItem,
   FormLabel,
+  FormField,
+  FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/lib/db";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Textarea } from "../ui/textarea";
+import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
 
+// Update the form schema to match our requirements
 const formSchema = z.object({
-  category: z.string({
-    required_error: "Please select a category.",
+  type: z.enum(["FOOD", "CLOTHES", "FUNDS", "MEDICINE"], {
+    required_error: "Please select a donation type.",
   }),
   description: z
     .string()
     .min(10, "Description must be at least 10 characters.")
     .max(500, "Description must not exceed 500 characters."),
   location: z.string().min(1, "Location is required."),
+  quantity: z.number().min(1, "Quantity is required."),
+  unit: z.string().min(1, "Unit is required."),
+  campaign_id: z.number().optional(),
 });
+
+type FormData = z.infer<typeof formSchema>;
 
 export default function NewDonation() {
   const [images, setImages] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
+  // const { toast } = Toaster();
+  const [campaigns, setCampaigns] = useState([]);
+  const [ngos, setNgos] = useState([]);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      category: "",
+      type: undefined,
       description: "",
       location: "",
+      quantity: 1,
+      unit: "",
     },
   });
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
+  // ... existing image handling code ...
 
-    const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
-    setPreviewUrls((prev) => [...prev, ...newPreviewUrls]);
-    setImages((prev) => [...prev, ...files]);
-  };
+  async function onSubmit(values: FormData) {
+    if (!user) {
+      toast.error("Authentication required", {
+        description: "Please login to create a donation.",
+      });
+      return;
+    }
 
-  const removeImage = (index: number) => {
-    URL.revokeObjectURL(previewUrls[index]);
-    setPreviewUrls((prev) => prev.filter((_, i) => i !== index));
-    setImages((prev) => prev.filter((_, i) => i !== index));
-  };
+    setIsSubmitting(true);
+    try {
+      // Upload images to Supabase storage
+      const imageUrls = await Promise.all(
+        images.map(async (image) => {
+          const fileName = `${crypto.randomUUID()}-${image.name}`;
+          const { data, error } = await supabase.storage
+            .from("donation-images")
+            .upload(fileName, image);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log({
-      ...values,
-      images,
-    });
+          if (error) throw error;
+          return data.path;
+        })
+      );
+
+      // Create donation record
+      const { data: donation, error: donationError } = await supabase
+        .from("donation")
+        .insert([
+          {
+            type: values.type,
+            description: values.description,
+            donor_id: user.id,
+            quantity: values.quantity,
+            unit: values.unit,
+            location: values.location,
+            images: imageUrls,
+            status: "PENDING",
+          },
+        ])
+        .select()
+        .single();
+
+      if (donationError) throw donationError;
+
+      toast("Success!", {
+        description: "Your donation has been created successfully.",
+      });
+
+      // Reset form
+      form.reset();
+      setImages([]);
+      setPreviewUrls([]);
+    } catch (error) {
+      toast.error("Error", {
+        description: "Failed to create donation. Please try again.",
+      });
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
+  useEffect(() => {
+    // Fetch campaigns and NGOs when component mounts
+    const fetchData = async () => {
+      const { data: campaignsData } = await supabase
+        .from("campaign")
+        .select("id, name")
+        .eq("completed", false);
+
+      const { data: ngosData } = await supabase.from("ngo").select("id, name");
+
+      if (campaignsData) setCampaigns(campaignsData);
+      if (ngosData) setNgos(ngosData);
+    };
+
+    fetchData();
+  }, []);
+
   return (
-    <Card className="bg-background shadow-xl py-0">
-      <CardHeader className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-t-lg">
-        <CardTitle className="text-2xl">Create New Donation</CardTitle>
-      </CardHeader>
-      <CardContent className="p-6">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col space-y-6"
-          >
-            <div className="w-full flex justify-between">
-              {/* Category */}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Card className="bg-card rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out hover:-translate-y-1">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-secondary-foreground">
+            Create New Donation
+          </CardTitle>
+          <p className="text-muted-foreground">
+            Fill in the details below to create a new donation proposal
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="category"
+                name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <FormLabel>Donation Type</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a category" />
+                          <SelectValue placeholder="Select donation type" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {DonationCategories.slice(0, 7).map(
-                          ({ title, icon }) => (
-                            <SelectItem key={title} value={title}>
-                              <div className="flex items-center gap-2">
-                                <span>{icon}</span>
-                                <span className="capitalize">
-                                  {title.replace("-", " ")}
-                                </span>
-                              </div>
+                        {["FOOD", "CLOTHES", "FUNDS", "MEDICINE"].map(
+                          (type) => (
+                            <SelectItem key={type} value={type}>
+                              {type.charAt(0) + type.slice(1).toLowerCase()}
                             </SelectItem>
                           )
                         )}
                       </SelectContent>
                     </Select>
-                    {/* <FormDescription>
-                    Select the category that best matches your donation
-                  </FormDescription> */}
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              {/* Location */}
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        placeholder="Describe your donation..."
+                        className="resize-none"
+                        rows={4}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="quantity"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Quantity</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(parseFloat(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="unit"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Unit</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="e.g., kg, items, INR" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {form.watch("type") === "FUNDS" && (
+                <FormField
+                  control={form.control}
+                  name="amount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Amount (INR)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(parseFloat(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
               <FormField
                 control={form.control}
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Location</FormLabel>
+                    <FormLabel>Pickup Location</FormLabel>
                     <FormControl>
-                      <div className="relative">
-                        <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                        <Input
-                          className="pl-10"
-                          placeholder="Enter pickup location"
-                          {...field}
-                        />
-                      </div>
+                      <Input {...field} placeholder="Enter pickup location" />
                     </FormControl>
-                    {/* <FormDescription>
-                      Enter the pickup location for your donation
-                    </FormDescription> */}
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
 
-            {/* Description */}
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Describe your donation (condition, quantity, etc.)"
-                      className="min-h-[120px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Provide details about your donation
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Images */}
-            <div className="space-y-3">
-              <FormLabel>Images</FormLabel>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {previewUrls.map((url, index) => (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    key={index}
-                    className="relative aspect-square"
-                  >
-                    <img
-                      src={url}
-                      alt={`Preview ${index + 1}`}
-                      className="w-full h-full object-cover rounded-lg"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(index)}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+              <FormField
+                control={form.control}
+                name="campaign_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Campaign</FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(parseInt(value))}
+                      value={field.value?.toString()}
                     >
-                      ×
-                    </button>
-                  </motion.div>
-                ))}
-                {previewUrls.length < 4 && (
-                  <motion.label
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="border-2 border-dashed border-gray-300 rounded-lg aspect-square flex flex-col items-center justify-center cursor-pointer hover:border-purple-500 hover:bg-purple-50"
-                  >
-                    <Upload className="w-8 h-8 text-gray-400" />
-                    <span className="text-sm text-gray-500 mt-2">
-                      Upload Image
-                    </span>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                      multiple
-                    />
-                  </motion.label>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a campaign" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {campaigns.map((campaign) => (
+                          <SelectItem
+                            key={campaign.id}
+                            value={campaign.id.toString()}
+                          >
+                            {campaign.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-              <FormDescription>Upload up to 4 images</FormDescription>
-            </div>
+              />
 
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white"
-            >
-              Submit Donation
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+              {/* <FormField
+                control={form.control}
+                name="ngo_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>NGO</FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(parseInt(value))}
+                      value={field.value?.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select an NGO" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {ngos.map((ngo) => (
+                          <SelectItem key={ngo.id} value={ngo.id.toString()}>
+                            {ngo.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              /> */}
+
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Creating Donation...
+                  </div>
+                ) : (
+                  "Submit Donation"
+                )}
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }

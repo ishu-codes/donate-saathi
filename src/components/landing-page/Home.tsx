@@ -1,9 +1,5 @@
-// import React from "react";
 import { motion } from "framer-motion";
 import {
-  //   FaHandHoldingHeart,
-  //   FaUsers,
-  //   FaDonate,
   FaFacebook,
   FaTwitter,
   FaInstagram,
@@ -12,13 +8,11 @@ import {
   FaArrowRight,
   FaRegClock,
   FaUser,
-  //   FaSearch,
   FaStar,
 } from "react-icons/fa";
 import Slider from "./Slider";
 
-import { TESTIMONIALS, categories, steps, partners, CAMPAIGNS } from "./data";
-import { BookHeart } from "lucide-react";
+import { TESTIMONIALS, categories, steps, CAMPAIGNS } from "./data";
 
 export default function Home() {
   return (
@@ -213,28 +207,6 @@ export default function Home() {
         <p className="text-lg text-slate-600 mb-12">
           We have been raising funds for credible nonprofits for 20+ years
         </p>
-        {/* <div className="relative w-full overflow-hidden">
-          <div className="flex animate-scroll">
-            {[...Array(2)].map((_, setIndex) => (
-              <div key={setIndex} className="flex flex-nowrap">
-                {partners.map((partner, index) => (
-                  <div
-                    key={`${setIndex}-${index}`}
-                    className="flex-none w-[180px] h-[120px] mx-3 relative group flex items-center justify-center"
-                  >
-                    <div className="absolute inset-0 border-2 border-slate-200 rounded-2xl bg-white transition-all duration-300 group-hover:border-red-600 group-hover:shadow-lg group-hover:scale-105 " />
-                    <img
-                      src={partner.logo}
-                      alt={partner.name}
-                      className="h-auto max-h-[70px] max-w-[140px] object-contain absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-3 z-10"
-                    />
-                    <BookHeart />
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div> */}
       </section>
 
       {/* Footer */}

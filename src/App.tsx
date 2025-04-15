@@ -10,6 +10,7 @@ import {
 } from "./components";
 import { Login, Register } from "./components/auth";
 import { Discover } from "./components/info/Discover";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import FindDonations from "./components/info/FindDonations";
 
 function App() {
@@ -19,40 +20,62 @@ function App() {
       <Route
         path="home"
         element={
-          <Layout>
-            <Home />
-          </Layout>
+          <ProtectedRoute>
+            <Layout>
+              <Home />
+            </Layout>
+          </ProtectedRoute>
         }
       />
       <Route
         path="new-donation"
         element={
-          <Layout>
-            <NewDonation />
-          </Layout>
+          <ProtectedRoute>
+            <Layout>
+              <NewDonation />
+            </Layout>
+          </ProtectedRoute>
         }
       />
       <Route
         path="recent"
         element={
-          <Layout>
-            <Recent />
-          </Layout>
+          <ProtectedRoute>
+            <Layout>
+              <Recent />
+            </Layout>
+          </ProtectedRoute>
         }
       />
       <Route
         path="settings"
         element={
-          <Layout>
-            <Settings />
-          </Layout>
+          <ProtectedRoute>
+            <Layout>
+              <Settings />
+            </Layout>
+          </ProtectedRoute>
         }
       />
       <Route path="logout" element={<Logout />} />
       <Route path="register" element={<Register />} />
       <Route path="login" element={<Login />} />
-      <Route path="discover-ngos" element={<Discover />} />
-      <Route path="find-donations" element={<FindDonations />} />
+      <Route
+        path="discover-ngos"
+        element={
+          <ProtectedRoute>
+            <Discover />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="find-donations"
+        element={
+          <ProtectedRoute>
+            <FindDonations />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }
