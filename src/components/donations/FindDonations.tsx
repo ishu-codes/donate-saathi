@@ -1,0 +1,497 @@
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import {
+  FaArrowRight,
+  FaCalendarAlt,
+  FaMapMarkerAlt,
+  FaBoxOpen,
+  FaSearch,
+  FaSortAmountDown,
+  FaChevronDown,
+  FaChevronUp,
+  FaTruck,
+  FaHandHoldingHeart,
+} from "react-icons/fa";
+
+const FindDonations: React.FC = () => {
+  const [activeFilter, setActiveFilter] = useState<string>("All");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [sortOpen, setSortOpen] = useState<boolean>(false);
+  const [sortBy, setSortBy] = useState<string>("Most Recent");
+  const [locationFilter, setLocationFilter] = useState<string>("");
+  const [locationOpen, setLocationOpen] = useState<boolean>(false);
+
+  // Sample donations data - in a real app, this would come from an API
+  const donations = [
+    {
+      id: 1,
+      title: "School Supplies Package",
+      description:
+        "Collection of notebooks, pens, pencils, rulers and other essential school supplies for underprivileged children.",
+      image:
+        "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      quantity: 25,
+      category: "Education",
+      location: "Mumbai, India",
+      donor: "City Book Store",
+      postedDate: "2023-10-15",
+      condition: "New",
+      color: "bg-blue-600",
+      gradient: "from-blue-600 to-blue-700",
+    },
+    {
+      id: 2,
+      title: "Winter Clothing Drive",
+      description:
+        "Warm jackets, sweaters, and blankets for homeless shelters and communities in need during winter.",
+      image:
+        "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      quantity: 50,
+      category: "Clothing",
+      location: "Delhi, India",
+      donor: "Fashion Forward Inc.",
+      postedDate: "2023-10-20",
+      condition: "Good",
+      color: "bg-purple-600",
+      gradient: "from-purple-600 to-purple-700",
+    },
+    {
+      id: 3,
+      title: "Food Supplies Package",
+      description:
+        "Non-perishable food items including rice, lentils, canned goods and other essentials for food banks.",
+      image:
+        "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      quantity: 100,
+      category: "Food",
+      location: "Bangalore, India",
+      donor: "Fresh Mart Grocers",
+      postedDate: "2023-10-18",
+      condition: "New",
+      color: "bg-yellow-600",
+      gradient: "from-yellow-600 to-yellow-700",
+    },
+    {
+      id: 4,
+      title: "Medical Supplies",
+      description:
+        "Basic first aid kits, over-the-counter medications, and hygiene products for rural health clinics.",
+      image:
+        "https://images.unsplash.com/photo-1631815588090-d4bfec5b7e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      quantity: 30,
+      category: "Healthcare",
+      location: "Chennai, India",
+      donor: "MediCare Pharmacy",
+      postedDate: "2023-10-12",
+      condition: "New",
+      color: "bg-red-600",
+      gradient: "from-red-600 to-red-700",
+    },
+    {
+      id: 5,
+      title: "Children's Books Collection",
+      description:
+        "Gently used children's books for establishing mini-libraries in underserved schools and community centers.",
+      image:
+        "https://images.unsplash.com/photo-1512820790803-83ca734da794?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      quantity: 200,
+      category: "Education",
+      location: "Hyderabad, India",
+      donor: "Reading Rainbow Foundation",
+      postedDate: "2023-10-22",
+      condition: "Good",
+      color: "bg-green-600",
+      gradient: "from-green-600 to-green-700",
+    },
+    {
+      id: 6,
+      title: "Farm Tools and Equipment",
+      description:
+        "Agricultural tools and basic farming equipment for small-scale farmers in rural communities.",
+      image:
+        "https://images.unsplash.com/photo-1598880513655-a8f135aa8861?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      quantity: 15,
+      category: "Agriculture",
+      location: "Punjab, India",
+      donor: "Green Fields Cooperative",
+      postedDate: "2023-10-10",
+      condition: "Refurbished",
+      color: "bg-amber-600",
+      gradient: "from-amber-600 to-amber-700",
+    },
+  ];
+
+  const locations = [
+    "All Locations",
+    ...new Set(donations.map((d) => d.location)),
+  ];
+  const categories = ["All", ...new Set(donations.map((d) => d.category))];
+
+  // Filter donations based on search, category, and location
+  const filteredDonations = donations.filter((donation) => {
+    const matchesSearch = searchQuery
+      ? donation.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        donation.description.toLowerCase().includes(searchQuery.toLowerCase())
+      : true;
+
+    const matchesCategory =
+      activeFilter === "All" || donation.category === activeFilter;
+    const matchesLocation =
+      locationFilter === "" ||
+      locationFilter === "All Locations" ||
+      donation.location === locationFilter;
+
+    return matchesSearch && matchesCategory && matchesLocation;
+  });
+
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    };
+    return new Date(dateString).toLocaleDateString("en-US", options);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-r from-blue-600 to-blue-700 py-24 px-6 md:px-10 lg:px-20">
+        <div className="absolute inset-0 bg-black opacity-40"></div>
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="h-full w-full grid grid-cols-12 opacity-20">
+            {[...Array(120)].map((_, i) => (
+              <div key={i} className="border-b border-r border-white/20"></div>
+            ))}
+          </div>
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto text-center">
+          <motion.h1
+            className="text-4xl md:text-5xl font-bold text-white mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            Find Available Donations
+          </motion.h1>
+          <motion.p
+            className="text-xl text-gray-200 max-w-3xl mx-auto mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            Browse available donations from our generous community members. All
+            items are ready for distribution to those in need.
+          </motion.p>
+
+          <motion.div
+            className="flex flex-col sm:flex-row justify-center gap-4 max-w-3xl mx-auto mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <div className="relative flex-grow">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search donations..."
+                className="w-full py-3 px-5 pl-12 rounded-lg border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white/50"
+              />
+              <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white" />
+            </div>
+
+            <div className="relative mr-2">
+              <button
+                onClick={() => {
+                  setSortOpen(!sortOpen);
+                  setLocationOpen(false);
+                }}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 py-3 px-5 rounded-lg border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors"
+              >
+                <FaSortAmountDown />
+                <span>Sort: {sortBy}</span>
+                {sortOpen ? <FaChevronUp /> : <FaChevronDown />}
+              </button>
+
+              {sortOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-20 overflow-hidden">
+                  {["Most Recent", "Oldest First", "A-Z", "Z-A"].map(
+                    (option) => (
+                      <button
+                        key={option}
+                        onClick={() => {
+                          setSortBy(option);
+                          setSortOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${
+                          sortBy === option
+                            ? "bg-blue-50 text-blue-600"
+                            : "text-gray-700"
+                        }`}
+                      >
+                        {option}
+                      </button>
+                    )
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setLocationOpen(!locationOpen);
+                  setSortOpen(false);
+                }}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 py-3 px-5 rounded-lg border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors"
+              >
+                <FaMapMarkerAlt />
+                <span>{locationFilter || "All Locations"}</span>
+                {locationOpen ? <FaChevronUp /> : <FaChevronDown />}
+              </button>
+
+              {locationOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-20 overflow-hidden max-h-60 overflow-y-auto">
+                  {locations.map((location) => (
+                    <button
+                      key={location}
+                      onClick={() => {
+                        setLocationFilter(
+                          location === "All Locations" ? "" : location
+                        );
+                        setLocationOpen(false);
+                      }}
+                      className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${
+                        (location === "All Locations" &&
+                          locationFilter === "") ||
+                        locationFilter === location
+                          ? "bg-blue-50 text-blue-600"
+                          : "text-gray-700"
+                      }`}
+                    >
+                      {location}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="flex flex-wrap justify-center gap-2 mt-6"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.6 }}
+          >
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setActiveFilter(category)}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  activeFilter === category
+                    ? "bg-white text-blue-600"
+                    : "bg-white/20 text-white hover:bg-white/30"
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Donations Grid Section */}
+      <section className="py-16 px-6 md:px-10 lg:px-20">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-800">
+              {activeFilter === "All"
+                ? "All Donations"
+                : activeFilter + " Donations"}
+              <span className="ml-2 text-lg font-normal text-gray-500">
+                ({filteredDonations.length})
+              </span>
+            </h2>
+
+            <Link
+              to="/dashboard/donations/offer"
+              className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <FaHandHoldingHeart size={16} />
+              <span>Offer Donation</span>
+            </Link>
+          </div>
+
+          {filteredDonations.length === 0 ? (
+            <div className="text-center py-16">
+              <h3 className="text-xl text-gray-600 mb-4">No donations found</h3>
+              <p className="text-gray-500 mb-6">
+                Try adjusting your search or filters to find what you're looking
+                for.
+              </p>
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setActiveFilter("All");
+                  setLocationFilter("");
+                }}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Reset Filters
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredDonations.map((donation) => (
+                <motion.div
+                  key={donation.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="group bg-white rounded-xl overflow-hidden border border-gray-100 shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2"
+                >
+                  <div className="relative h-56 overflow-hidden">
+                    <img
+                      src={donation.image}
+                      alt={donation.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="absolute top-4 left-4 z-10">
+                      <span
+                        className={`px-4 py-1.5 rounded-full text-white text-xs font-semibold uppercase tracking-wider bg-gradient-to-r ${donation.gradient}`}
+                      >
+                        {donation.category}
+                      </span>
+                    </div>
+                    <div className="absolute bottom-4 left-4 right-4 transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 flex justify-between items-center z-10">
+                      <span className="text-white text-sm bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1.5">
+                        <FaMapMarkerAlt size={12} /> {donation.location}
+                      </span>
+                      <span className="text-white text-sm bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1.5">
+                        <FaCalendarAlt size={12} /> Posted{" "}
+                        {formatDate(donation.postedDate)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-6">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                      {donation.title}
+                    </h3>
+                    <p className="text-sm text-gray-500 mb-2">
+                      Offered by {donation.donor}
+                    </p>
+                    <p className="text-gray-600 mb-6 line-clamp-2 group-hover:line-clamp-none transition-all duration-500">
+                      {donation.description}
+                    </p>
+
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center gap-1.5 text-sm text-gray-600">
+                        <FaBoxOpen className="text-blue-500" />
+                        <span>
+                          Quantity: <strong>{donation.quantity}</strong>
+                        </span>
+                      </div>
+
+                      <div className="text-sm px-2 py-1 rounded bg-gray-100 text-gray-800">
+                        Condition:{" "}
+                        <span className="font-medium">
+                          {donation.condition}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end">
+                      <motion.button
+                        className={`flex items-center gap-2 px-4 py-2 text-white rounded-md shadow-sm transition-all duration-300 bg-gradient-to-r ${donation.gradient} hover:shadow-lg transform hover:-translate-y-1`}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        Request Item <FaArrowRight size={12} />
+                      </motion.button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+
+          {filteredDonations.length > 0 && (
+            <div className="text-center mt-16">
+              <motion.button
+                className="relative overflow-hidden px-10 py-4 border-2 border-blue-600 text-blue-600 font-semibold rounded-md hover:text-white transition-colors duration-500 group"
+                whileHover={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.1)" }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <span className="relative z-10">Load More Donations</span>
+                <span className="absolute inset-0 bg-blue-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></span>
+              </motion.button>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Donation Process Section */}
+      <section className="py-16 px-6 md:px-10 lg:px-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">
+              How It Works
+            </h2>
+            <div className="w-20 h-1.5 bg-blue-600 mx-auto rounded-full mb-6"></div>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Our platform makes it easy to find and request donations. Follow
+              these simple steps to get started.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: <FaSearch className="text-3xl text-blue-600" />,
+                title: "Find Donations",
+                description:
+                  "Browse through available donations and find items that match your needs or the needs of those you're helping.",
+              },
+              {
+                icon: <FaHandHoldingHeart className="text-3xl text-blue-600" />,
+                title: "Request Items",
+                description:
+                  "Submit a request for the items you need, providing information about who will benefit from these donations.",
+              },
+              {
+                icon: <FaTruck className="text-3xl text-blue-600" />,
+                title: "Coordinate Pickup",
+                description:
+                  "Once approved, coordinate with the donor for pickup or delivery of the items to those in need.",
+              },
+            ].map((step, index) => (
+              <motion.div
+                key={index}
+                className="bg-white p-8 rounded-xl shadow-md"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                  {step.icon}
+                </div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+                  {step.title}
+                </h3>
+                <p className="text-gray-600 text-center">{step.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default FindDonations;

@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 const NAVS = [
   { title: "Home", url: "/", isDropdown: false },
   { title: "Discover NGOs", url: "discover-ngos", isDropdown: false },
+  { title: "Donation Campaigns", url: "donation-campaigns", isDropdown: false },
   { title: "Find Donations", url: "find-donations", isDropdown: false },
   { title: "About us", url: "about-us", isDropdown: false },
 ];

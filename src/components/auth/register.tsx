@@ -1,26 +1,34 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
-// import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/db";
-import type { Tag, NGOData } from "@/interface";
-// import { fetchTags } from "@/db";
+import type { NGOData } from "@/interface";
 import { useTags } from "@/hooks/db";
+import { motion } from "framer-motion";
+import {
+  FaUser,
+  FaLock,
+  FaBuilding,
+  FaEnvelope,
+  FaMapMarkerAlt,
+  FaPhone,
+  FaGlobe,
+  FaArrowRight,
+  FaSeedling,
+} from "react-icons/fa";
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [userType, setUserType] = useState<"DONOR" | "NGO">("DONOR");
-  // const [tags, setTags] = useState<Tag[]>([]);
+  const [userType, setUserType] = useState<"donor" | "NGO">("donor");
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [ngoDetails, setNgoDetails] = useState<NGOData>({
     name: "",
@@ -34,17 +42,7 @@ export default function Register() {
 
   const { signUp } = useAuth();
   const navigate = useNavigate();
-  const {
-    data: tagsData,
-    isLoading: isLoadingTags,
-    error: tagsError,
-  } = useTags();
-
-  // useEffect(() => {
-  //   fetchTags().then((res) => {
-  //     setTags(res ?? []);
-  //   });
-  // }, []);
+  const { data: tagsData, isLoading: isLoadingTags } = useTags();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,207 +118,509 @@ export default function Register() {
       }
 
       navigate("/home");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsRegistering(false);
     }
   };
 
+  const handleTagToggle = (tagId: number) => {
+    setSelectedTags((prev) =>
+      prev.includes(tagId)
+        ? prev.filter((id) => id !== tagId)
+        : [...prev, tagId]
+    );
+  };
+
+  const getIcon = (fieldName: string) => {
+    switch (fieldName) {
+      case "username":
+        return <FaUser className="h-5 w-5 text-gray-400" />;
+      case "email":
+        return <FaEnvelope className="h-5 w-5 text-gray-400" />;
+      case "password":
+        return <FaLock className="h-5 w-5 text-gray-400" />;
+      case "name":
+        return <FaBuilding className="h-5 w-5 text-gray-400" />;
+      case "location":
+        return <FaMapMarkerAlt className="h-5 w-5 text-gray-400" />;
+      case "phone":
+        return <FaPhone className="h-5 w-5 text-gray-400" />;
+      case "website":
+        return <FaGlobe className="h-5 w-5 text-gray-400" />;
+      default:
+        return <FaUser className="h-5 w-5 text-gray-400" />;
+    }
+  };
+
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex overflow-hidden relative">
+      {/* Background decorative elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-green-100 opacity-50 blur-3xl"></div>
+        <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-teal-100 opacity-50 blur-3xl"></div>
+
+        {/* Subtle patterns */}
+        <svg
+          width="100%"
+          height="100%"
+          className="absolute inset-0 opacity-[0.03]"
+        >
+          <pattern
+            id="pattern-circles"
+            x="0"
+            y="0"
+            width="40"
+            height="40"
+            patternUnits="userSpaceOnUse"
+            patternContentUnits="userSpaceOnUse"
+          >
+            <circle
+              id="pattern-circle"
+              cx="20"
+              cy="20"
+              r="1"
+              fill="currentColor"
+            ></circle>
+          </pattern>
+          <rect
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
+            fill="url(#pattern-circles)"
+          ></rect>
+        </svg>
+
+        {/* Floating elements */}
+        <motion.div
+          className="absolute top-1/4 right-1/3 w-12 h-12 bg-gradient-to-br from-green-200 to-green-300 rounded-lg opacity-30"
+          animate={{
+            y: [0, -15, 0],
+            rotate: [0, 5, 0],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 5,
+            ease: "easeInOut",
+          }}
+        ></motion.div>
+
+        <motion.div
+          className="absolute bottom-1/3 left-1/4 w-16 h-16 bg-gradient-to-br from-teal-200 to-green-200 rounded-full opacity-40"
+          animate={{
+            y: [0, 15, 0],
+            rotate: [0, -5, 0],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 7,
+            ease: "easeInOut",
+            delay: 1,
+          }}
+        ></motion.div>
+      </div>
+
       {/* Left Section */}
-      <div className="flex-1 bg-blue-600 p-8 flex flex-col justify-between text-white pt-16">
-        <div className="h-full flex flex-col gap-8">
-          <h1 className="text-5xl font-bold mb-4">Hello Saathi! 👋</h1>
-          <p className="text-xl">
-            Donate Saathi connects those in need with people who have excess
-            resources. Make a difference through seamless giving and sharing!
-          </p>
+      <div className="flex-1 bg-gradient-to-b from-green-600 to-green-700 relative overflow-hidden p-8 flex flex-col justify-between text-white pt-16">
+        {/* Decorative background patterns */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute h-full w-full grid grid-cols-8 grid-rows-12">
+            {[...Array(96)].map((_, i) => (
+              <div key={i} className="border-b border-r border-white/20"></div>
+            ))}
+          </div>
         </div>
-        <div className="text-sm">
-          &copy; 2025 Donate Saathi. All rights reserved.
-        </div>
+
+        <div className="absolute -bottom-8 -right-8 w-64 h-64 bg-green-500 rounded-full opacity-20 blur-xl"></div>
+
+        <motion.div
+          className="h-full flex flex-col gap-8 relative z-10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="mb-4">
+            <motion.div
+              className="flex items-center gap-3 mb-10"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+            >
+              <FaSeedling className="text-3xl text-white" />
+              <span className="text-2xl font-bold">DonateSaathi</span>
+            </motion.div>
+
+            <motion.h1
+              className="text-5xl font-bold mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+            >
+              Hello Saathi! 👋
+            </motion.h1>
+            <motion.p
+              className="text-xl text-green-100"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.6 }}
+            >
+              DonateSaathi connects those in need with people who have excess
+              resources. Make a difference through seamless giving and sharing!
+            </motion.p>
+          </div>
+
+          <motion.div
+            className="mt-auto bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 0.6 }}
+          >
+            <h3 className="text-xl font-semibold mb-3">Join Our Community</h3>
+            <p className="text-green-50 mb-5">
+              Whether you're looking to donate, volunteer, or represent an NGO,
+              DonateSaathi provides a platform to make meaningful connections
+              and impact.
+            </p>
+            <div className="flex gap-2">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-300 rounded-full"></div>
+                <span className="text-sm text-green-200">Register</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-white/30 rounded-full"></div>
+                <span className="text-sm text-green-200">Connect</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-white/30 rounded-full"></div>
+                <span className="text-sm text-green-200">Contribute</span>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+
+        <motion.div
+          className="text-sm text-green-200"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 0.6 }}
+        >
+          &copy; 2025 DonateSaathi. All rights reserved.
+        </motion.div>
       </div>
 
       {/* Right Section */}
-      <div className="flex-1 p-8 flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <h3 className="text-3xl font-bold">Register!</h3>
-            <Tabs
-              defaultValue="donor"
-              className="w-full mt-4"
-              onValueChange={(value) => setUserType(value)}
-            >
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="donor">Register as Donor</TabsTrigger>
-                <TabsTrigger value="NGO">Register as NGO</TabsTrigger>
-              </TabsList>
+      <div className="flex-1 p-4 md:p-8 flex items-center justify-center relative overflow-y-auto max-h-screen">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="w-full max-w-md relative z-10"
+        >
+          <Card className="w-full max-w-md border border-gray-100 shadow-xl bg-white/80 backdrop-blur-sm">
+            <CardHeader className="pb-2">
+              <motion.h3
+                className="text-2xl font-bold text-gray-800"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                Create an account
+              </motion.h3>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="mt-2"
+              >
+                <Tabs
+                  defaultValue="donor"
+                  className="w-full"
+                  value={userType}
+                  onValueChange={(value) =>
+                    setUserType(value as "donor" | "NGO")
+                  }
+                >
+                  <TabsList className="grid w-full grid-cols-2 bg-green-50">
+                    <TabsTrigger
+                      value="donor"
+                      className="data-[state=active]:bg-green-600 data-[state=active]:text-white"
+                    >
+                      Register as Donor
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="NGO"
+                      className="data-[state=active]:bg-green-600 data-[state=active]:text-white"
+                    >
+                      Register as NGO
+                    </TabsTrigger>
+                  </TabsList>
 
-              <TabsContent value="donor">
-                <p className="text-gray-500 mt-2">
-                  Join as a donor to start making a difference today!
-                </p>
-              </TabsContent>
+                  <TabsContent value="donor">
+                    <p className="text-gray-500 mt-2">
+                      Join as a donor to start making a difference today!
+                    </p>
+                  </TabsContent>
 
-              <TabsContent value="NGO">
-                <p className="text-gray-500 mt-2">
-                  Register your NGO to connect with donors and volunteers.
-                </p>
-              </TabsContent>
-            </Tabs>
-          </CardHeader>
+                  <TabsContent value="NGO">
+                    <p className="text-gray-500 mt-2">
+                      Register your NGO to connect with donors and volunteers.
+                    </p>
+                  </TabsContent>
+                </Tabs>
+              </motion.div>
+            </CardHeader>
 
-          <CardContent className="space-y-4">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && <div className="text-red-500 text-sm">{error}</div>}
-
-              {[
-                {
-                  type: "text",
-                  placeholder: "Username",
-                  value: username,
-                  onChange: setUsername,
-                },
-                {
-                  type: "email",
-                  placeholder: "Email",
-                  value: email,
-                  onChange: setEmail,
-                },
-                {
-                  type: "password",
-                  placeholder: "Password",
-                  value: password,
-                  onChange: setPassword,
-                },
-              ].map((field) => (
-                <div className="space-y-2" key={field.placeholder}>
-                  <Input
-                    type={field.type}
-                    placeholder={field.placeholder}
-                    value={field.value}
-                    onChange={(e) => field.onChange(e)}
-                    required
-                  />
-                </div>
-              ))}
-
-              {userType === "NGO" && (
-                <div className="space-y-4">
-                  {[
-                    {
-                      name: "name",
-                      type: "text",
-                      placeholder: "NGO Name",
-                    },
-                    {
-                      name: "description",
-                      type: "text",
-                      placeholder: "Description",
-                    },
-                    {
-                      name: "location",
-                      type: "text",
-                      placeholder: "Location",
-                    },
-                    {
-                      name: "phone",
-                      type: "tel",
-                      placeholder: "Phone Number",
-                    },
-                    {
-                      name: "website",
-                      type: "url",
-                      placeholder: "Website (Optional)",
-                    },
-                  ].map((field) => (
-                    <Input
-                      key={field.name}
-                      type={field.type}
-                      placeholder={field.placeholder}
-                      value={ngoDetails[field.name as keyof NGOData]}
-                      onChange={(e) =>
-                        setNgoDetails({
-                          ...ngoDetails,
-                          [field.name]: e.target.value,
-                        })
-                      }
-                      required={field.name !== "website"}
-                    />
-                  ))}
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Select Tags</label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {tagsData?.map((tag) => (
-                        <div
-                          key={tag.id}
-                          className="flex items-center space-x-2"
-                        >
-                          <Checkbox
-                            id={`tag-${tag.id}`}
-                            checked={selectedTags.includes(tag.id)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setSelectedTags([...selectedTags, tag.id]);
-                              } else {
-                                setSelectedTags(
-                                  selectedTags.filter((id) => id !== tag.id)
-                                );
-                              }
-                            }}
-                          />
-                          <label htmlFor={`tag-${tag.id}`}>{tag.name}</label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <Button type="submit" className="w-full" disabled={isRegistering}>
-                {isRegistering ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Registering...
-                  </div>
-                ) : (
-                  "Register"
-                )}
-              </Button>
-
-              {/* Sign-in */}
-              <div className="text-center mt-4">
-                <p className="text-sm text-gray-600">
-                  Already have an account?{" "}
-                  <Button
-                    variant="link"
-                    className="p-0 text-blue-600 hover:text-blue-800"
-                    onClick={() => navigate("/login")}
+            <CardContent className="space-y-5 pt-6">
+              <form onSubmit={handleSubmit} className="space-y-5">
+                {error && (
+                  <motion.div
+                    className="bg-red-50 text-red-500 text-sm p-3 rounded-lg border border-red-100"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
                   >
-                    Sign in
+                    {error}
+                  </motion.div>
+                )}
+
+                {/* Common fields */}
+                {[
+                  {
+                    name: "username",
+                    type: "text",
+                    placeholder: "Username",
+                    value: username,
+                    onChange: setUsername,
+                    label: "Username",
+                  },
+                  {
+                    name: "email",
+                    type: "email",
+                    placeholder: "Email address",
+                    value: email,
+                    onChange: setEmail,
+                    label: "Email",
+                  },
+                  {
+                    name: "password",
+                    type: "password",
+                    placeholder: "Password",
+                    value: password,
+                    onChange: setPassword,
+                    label: "Password",
+                  },
+                ].map((field, index) => (
+                  <motion.div
+                    className="space-y-1"
+                    key={field.name}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 + index * 0.1 }}
+                  >
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">
+                      {field.label}
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        {getIcon(field.name)}
+                      </div>
+                      <Input
+                        type={field.type}
+                        placeholder={field.placeholder}
+                        value={field.value}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        required
+                        className="pl-10 bg-white border-gray-200 focus:border-green-500 focus:ring-green-500"
+                      />
+                    </div>
+                  </motion.div>
+                ))}
+
+                {/* NGO specific fields */}
+                {userType === "NGO" && (
+                  <motion.div
+                    className="space-y-5"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.9 }}
+                  >
+                    <div className="h-px bg-gray-200 my-2"></div>
+
+                    <div className="text-sm font-medium text-gray-700">
+                      NGO Details
+                    </div>
+
+                    {[
+                      {
+                        name: "name",
+                        type: "text",
+                        placeholder: "NGO Name",
+                        label: "NGO Name",
+                      },
+                      {
+                        name: "description",
+                        type: "text",
+                        placeholder: "Description",
+                        label: "Description",
+                      },
+                      {
+                        name: "location",
+                        type: "text",
+                        placeholder: "Location",
+                        label: "Location",
+                      },
+                      {
+                        name: "phone",
+                        type: "tel",
+                        placeholder: "Phone Number",
+                        label: "Phone Number",
+                      },
+                      {
+                        name: "website",
+                        type: "url",
+                        placeholder: "Website (Optional)",
+                        label: "Website (Optional)",
+                      },
+                    ].map((field, index) => (
+                      <motion.div
+                        className="space-y-1"
+                        key={field.name}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1 + index * 0.1 }}
+                      >
+                        <label className="text-sm font-medium text-gray-700 mb-1 block">
+                          {field.label}
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            {getIcon(field.name)}
+                          </div>
+                          <Input
+                            type={field.type}
+                            placeholder={field.placeholder}
+                            value={
+                              ngoDetails[field.name as keyof NGOData] as string
+                            }
+                            onChange={(e) =>
+                              setNgoDetails({
+                                ...ngoDetails,
+                                [field.name]: e.target.value,
+                              })
+                            }
+                            required={field.name !== "website"}
+                            className="pl-10 bg-white border-gray-200 focus:border-green-500 focus:ring-green-500"
+                          />
+                        </div>
+                      </motion.div>
+                    ))}
+
+                    {/* NGO Tags */}
+                    <motion.div
+                      className="space-y-2"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 1.5 }}
+                    >
+                      <label className="text-sm font-medium text-gray-700 block">
+                        Select NGO Categories (at least one)
+                      </label>
+                      {isLoadingTags ? (
+                        <div className="flex justify-center py-4">
+                          <Loader2 className="h-6 w-6 animate-spin text-green-600" />
+                        </div>
+                      ) : tagsData ? (
+                        <div className="flex flex-wrap gap-2 p-3 bg-green-50 rounded-lg">
+                          {tagsData.map((tag) => (
+                            <div
+                              key={tag.id}
+                              className="flex items-center space-x-2"
+                            >
+                              <Checkbox
+                                id={`tag-${tag.id}`}
+                                checked={selectedTags.includes(tag.id)}
+                                onCheckedChange={() => handleTagToggle(tag.id)}
+                                className="border-green-500 text-green-600 focus:ring-green-500"
+                              />
+                              <label
+                                htmlFor={`tag-${tag.id}`}
+                                className="text-sm font-medium cursor-pointer text-gray-700"
+                              >
+                                {tag.name}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-sm text-red-500">
+                          Failed to load tags. Please try again later.
+                        </div>
+                      )}
+                    </motion.div>
+                  </motion.div>
+                )}
+
+                <motion.div
+                  className="pt-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: userType === "NGO" ? 1.6 : 0.9 }}
+                >
+                  <Button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white py-2.5 rounded-lg transition-all duration-300 flex items-center justify-center group"
+                    disabled={isRegistering}
+                  >
+                    {isRegistering ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <span>Creating your account...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Create Account</span>
+                        <FaArrowRight className="ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                      </>
+                    )}
                   </Button>
-                </p>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+                </motion.div>
+              </form>
+
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: userType === "NGO" ? 1.7 : 1 }}
+                className="pt-2 text-sm text-center text-gray-500"
+              >
+                Already have an account?{" "}
+                <Link
+                  to="/login"
+                  className="text-green-600 hover:text-green-700 font-medium"
+                >
+                  Sign in
+                </Link>
+              </motion.div>
+            </CardContent>
+          </Card>
+
+          <motion.div
+            className="mt-6 text-center text-sm text-gray-500"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: userType === "NGO" ? 1.8 : 1.1 }}
+          >
+            By creating an account, you agree to our{" "}
+            <Link to="/terms" className="text-green-600 hover:text-green-700">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link to="/privacy" className="text-green-600 hover:text-green-700">
+              Privacy Policy
+            </Link>
+          </motion.div>
+        </motion.div>
       </div>
-      <Dialog open={isRegistering} onOpenChange={() => {}}>
-        <DialogContent className="sm:max-w-md">
-          <div className="flex flex-col items-center justify-center p-4">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-600 mb-4" />
-            <h3 className="text-lg font-semibold">Registering...</h3>
-            <p className="text-sm text-gray-500 text-center mt-1">
-              {userType === "NGO"
-                ? "Creating your NGO profile. Please wait..."
-                : "Setting up your donor account. Please wait..."}
-            </p>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

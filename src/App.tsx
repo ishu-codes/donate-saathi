@@ -11,22 +11,16 @@ import {
 import { Login, Register } from "./components/auth";
 import { Discover } from "./components/info/Discover";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import FindDonations from "./components/info/FindDonations";
 import DashBoard from "./components/dashboard";
 import AboutUs from "./components/info/AboutUs";
+import DonationCampaigns from "./components/campaigns/DonationCampaigns";
+import FindDonations from "./components/donations/FindDonations";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
-      <Route
-        path="about-us"
-        element={
-          <Layout>
-            <AboutUs />
-          </Layout>
-        }
-      />
+      <Route path="about-us" element={<AboutUs />} />
       <Route
         path="home"
         element={
@@ -70,22 +64,9 @@ function App() {
       <Route path="logout" element={<Logout />} />
       <Route path="register" element={<Register />} />
       <Route path="login" element={<Login />} />
-      <Route
-        path="discover-ngos"
-        element={
-          <ProtectedRoute>
-            <Discover />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="find-donations"
-        element={
-          <ProtectedRoute>
-            <FindDonations />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="discover-ngos" element={<Discover />} />
+      <Route path="donation-campaigns" element={<DonationCampaigns />} />
+      <Route path="find-donations" element={<FindDonations />} />
     </Routes>
   );
 }

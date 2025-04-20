@@ -410,7 +410,10 @@ const NewLandingPage: React.FC = () => {
       </section>
 
       {/* Popular Causes Section - Enhanced */}
-      <section className="py-24 px-6 md:px-10 lg:px-20 bg-white relative">
+      <section
+        id="popular-causes"
+        className="py-24 px-6 md:px-10 lg:px-20 bg-white relative"
+      >
         {/* Background pattern */}
         <div className="absolute inset-0 z-0 opacity-5">
           <div className="absolute right-0 bottom-0 w-1/2 h-1/2 bg-gradient-to-t from-green-100 to-transparent"></div>
@@ -560,6 +563,7 @@ const NewLandingPage: React.FC = () => {
             className="relative overflow-hidden px-10 py-4 border-2 border-green-600 text-green-600 font-semibold rounded-md hover:text-white transition-colors duration-500 group"
             whileHover={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.1)" }}
             whileTap={{ scale: 0.98 }}
+            onClick={() => (window.location.href = "/donation-campaigns")}
           >
             <span className="relative z-10">View All Causes</span>
             <span className="absolute inset-0 bg-green-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></span>
