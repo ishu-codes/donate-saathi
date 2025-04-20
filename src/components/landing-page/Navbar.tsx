@@ -31,12 +31,12 @@ export default function Navbar() {
           isScrolled ? "shadow-md" : ""
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-8 sm:px-6 lg:px-20">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link to="/" className="flex-shrink-0">
               {/* <img className="h-8 w-auto" src="/logo.png" alt="DonateSaathi" /> */}
-              <span className="text-3xl font-bold text-red-600">
+              <span className="text-3xl font-bold text-green-600">
                 DonateSaathi
               </span>
             </Link>
@@ -65,7 +65,7 @@ export default function Navbar() {
               </button> */}
               <Link
                 to={"/login"}
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
               >
                 Login
               </Link>

@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import {
   LandingPage,
   Layout,
-  Home,
+  // DashBoard,
   NewDonation,
   Recent,
   Settings,
@@ -12,17 +12,27 @@ import { Login, Register } from "./components/auth";
 import { Discover } from "./components/info/Discover";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import FindDonations from "./components/info/FindDonations";
+import DashBoard from "./components/dashboard";
+import AboutUs from "./components/info/AboutUs";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route
+        path="about-us"
+        element={
+          <Layout>
+            <AboutUs />
+          </Layout>
+        }
+      />
+      <Route
         path="home"
         element={
           <ProtectedRoute>
             <Layout>
-              <Home />
+              <DashBoard />
             </Layout>
           </ProtectedRoute>
         }

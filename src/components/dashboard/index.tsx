@@ -5,7 +5,7 @@ import TopLeft from "./TopLeft";
 import TopRight from "./TopRight";
 import "./style.css";
 
-export default function Home() {
+export default function DashBoard() {
   const { user } = useAuth();
   const username = user?.email?.split("@")[0] || "Saathi";
 
