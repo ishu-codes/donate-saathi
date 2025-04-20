@@ -11,7 +11,7 @@ export default function Sidebar() {
     { title: "Settings", icon: <Settings />, url: "/settings" },
   ];
   return (
-    <>
+    <div className="w-72 h-full flex flex-col py-6 sticky top-0 border-r">
       <div className="h-full flex flex-col gap-10">
         <Link className="px-4" to="/">
           <picture className="h-4">
@@ -44,6 +44,6 @@ export default function Sidebar() {
         <LogOut />
         Logout
       </Link>
-    </>
+    </div>
   );
 }

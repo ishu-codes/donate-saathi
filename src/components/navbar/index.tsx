@@ -8,7 +8,7 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   return (
-    <div className="w-full h-16 flex items-center justify-between px-8 py-4">
+    <div className="w-full h-16 flex items-center justify-between px-8 py-4 bg-background border-b">
       <form className="w-1/3 flex bg-accent rounded-full">
         <input
           type="text"

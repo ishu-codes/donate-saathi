@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
 // import Login from "../Login/Login";
@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 // interface NavbarProps {}
 
 const NAVS = [
+  { title: "Home", url: "/", isDropdown: false },
   { title: "Discover NGOs", url: "discover-ngos", isDropdown: false },
   { title: "Find Donations", url: "find-donations", isDropdown: false },
   { title: "About us", url: "about-us", isDropdown: false },
@@ -26,19 +27,19 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-          isScrolled ? "bg-white shadow-md" : "bg-transparent"
+        className={`fixed top-0 w-full z-50 transition-all duration-300 bg-background ${
+          isScrolled ? "shadow-md" : ""
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <div className="flex-shrink-0">
+            <Link to="/" className="flex-shrink-0">
               {/* <img className="h-8 w-auto" src="/logo.png" alt="DonateSaathi" /> */}
               <span className="text-3xl font-bold text-red-600">
                 DonateSaathi
               </span>
-            </div>
+            </Link>
 
             {/* Navigation Links */}
 
@@ -47,24 +48,24 @@ export default function Navbar() {
               <div className="hidden md:flex items-center space-x-8 mr-8">
                 {/* <div className="relative group"> */}
                 {NAVS.map((nav, idx) => (
-                  <a
+                  <Link
                     key={idx}
-                    href={nav.url}
+                    to={nav.url}
                     className="flex items-center text-gray-700 hover:text-gray-900"
                   >
                     {nav.title}
                     {nav.isDropdown && (
                       <FaChevronDown className="ml-1 h-3 w-3" />
                     )}
-                  </a>
+                  </Link>
                 ))}
               </div>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+              {/* <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
                 Donate Money
-              </button>
+              </button> */}
               <Link
                 to={"/login"}
-                className="bg-transparent border border-blue-600 text-blue-600 px-4 py-2 rounded-md hover:bg-blue-50 transition-colors"
+                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
               >
                 Login
               </Link>

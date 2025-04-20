@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Upload, MapPin, Loader2 } from "lucide-react";
+import { Upload, MapPin, Loader2, FileUp, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -27,6 +27,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Textarea } from "../ui/textarea";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import DonationCard from "./DonationCard";
 
 // Update the form schema to match our requirements
 const formSchema = z.object({
@@ -40,7 +41,9 @@ const formSchema = z.object({
   location: z.string().min(1, "Location is required."),
   quantity: z.number().min(1, "Quantity is required."),
   unit: z.string().min(1, "Unit is required."),
-  campaign_id: z.number().optional(),
+  campaign_id: z.string().optional(),
+  media: z.array(z.any()).optional(),
+  amount: z.string(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -53,6 +56,8 @@ export default function NewDonation() {
   // const { toast } = Toaster();
   const [campaigns, setCampaigns] = useState([]);
   const [ngos, setNgos] = useState([]);
+  const [mediaFiles, setMediaFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<{ url: string; type: string }[]>([]);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -62,10 +67,38 @@ export default function NewDonation() {
       location: "",
       quantity: 1,
       unit: "",
+      amount: "",
     },
   });
 
-  // ... existing image handling code ...
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const validFiles = files.filter(
+      (file) => file.type.startsWith("image/") || file.type.startsWith("video/")
+    );
+
+    setMediaFiles((prev) => [...prev, ...validFiles]);
+
+    // Create previews
+    validFiles.forEach((file) => {
+      const fileUrl = URL.createObjectURL(file);
+      setPreviews((prev) => [
+        ...prev,
+        {
+          url: fileUrl,
+          type: file.type.startsWith("image/") ? "image" : "video",
+        },
+      ]);
+    });
+  };
+
+  const removeFile = (index: number) => {
+    setMediaFiles((prev) => prev.filter((_, i) => i !== index));
+    setPreviews((prev) => {
+      URL.revokeObjectURL(prev[index].url);
+      return prev.filter((_, i) => i !== index);
+    });
+  };
 
   async function onSubmit(values: FormData) {
     if (!user) {
@@ -86,7 +119,10 @@ export default function NewDonation() {
             .upload(fileName, image);
 
           if (error) throw error;
-          return data.path;
+          return {
+            url: data.path,
+            type: file.type.startsWith("image/") ? "image" : "video",
+          };
         })
       );
 
@@ -118,6 +154,12 @@ export default function NewDonation() {
       form.reset();
       setImages([]);
       setPreviewUrls([]);
+
+      setPreviews((prev) => {
+        prev.forEach((p) => URL.revokeObjectURL(p.url));
+        return [];
+      });
+      setMediaFiles([]);
     } catch (error) {
       toast.error("Error", {
         description: "Failed to create donation. Please try again.",
@@ -146,19 +188,20 @@ export default function NewDonation() {
   }, []);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+    <div
+      className="flex gap-8"
+      // initial={{ opacity: 0, y: 20 }}
+      // animate={{ opacity: 1, y: 0 }}
+      // transition={{ duration: 0.5 }}
     >
-      <Card className="bg-card rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out hover:-translate-y-1">
+      <div className="flex flex-col w-1/2">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-secondary-foreground">
             Create New Donation
           </CardTitle>
-          <p className="text-muted-foreground">
+          {/* <p className="text-muted-foreground">
             Fill in the details below to create a new donation proposal
-          </p>
+          </p> */}
         </CardHeader>
         <CardContent className="space-y-6">
           <Form {...form}>
@@ -339,6 +382,64 @@ export default function NewDonation() {
                 )}
               /> */}
 
+              <FormItem>
+                <FormLabel>Upload Images & Videos</FormLabel>
+                <div className="grid gap-4">
+                  <div className="flex items-center gap-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() =>
+                        document.getElementById("file-upload")?.click()
+                      }
+                      className="w-full"
+                    >
+                      <FileUp className="w-4 h-4 mr-2" />
+                      Add Media
+                    </Button>
+                    <Input
+                      id="file-upload"
+                      type="file"
+                      accept="image/*,video/*"
+                      multiple
+                      className="hidden"
+                      onChange={handleFileChange}
+                    />
+                  </div>
+
+                  {previews.length > 0 && (
+                    <div className="grid grid-cols-3 gap-4">
+                      {previews.map((preview, index) => (
+                        <div key={index} className="relative group">
+                          {preview.type === "image" ? (
+                            <img
+                              src={preview.url}
+                              alt={`Preview ${index + 1}`}
+                              className="w-full h-24 object-cover rounded-md"
+                            />
+                          ) : (
+                            <video
+                              src={preview.url}
+                              className="w-full h-24 object-cover rounded-md"
+                              controls
+                            />
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => removeFile(index)}
+                            className="absolute top-1 right-1 p-1 bg-red-500 rounded-full 
+                text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <FormMessage />
+              </FormItem>
+
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <div className="flex items-center gap-2">
@@ -352,7 +453,20 @@ export default function NewDonation() {
             </form>
           </Form>
         </CardContent>
-      </Card>
-    </motion.div>
+      </div>
+      <div className="flex-1 px-8">
+        <DonationCard
+          mediaPreviews={previews}
+          donationType={form.watch("type")}
+          campaigns={campaigns}
+          campaignId={form.watch("campaign_id")}
+          description={form.watch("description")}
+          location={form.watch("location")}
+          quantity={form.watch("quantity")}
+          amount={form.watch("amount")}
+          unit={form.watch("unit")}
+        />
+      </div>
+    </div>
   );
 }
