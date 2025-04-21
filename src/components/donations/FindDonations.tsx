@@ -34,7 +34,7 @@ interface DonationDonor {
 interface DonationImage {
   id: number | string;
   url?: string;
-  image_url?: string;
+  media_url?: string;
   media_type?: string;
 }
 
@@ -79,7 +79,7 @@ interface ApiDonation {
     | { id: number | string; email: string; created_at: string }[];
   donation_images: {
     id: number | string;
-    image_url: string;
+    media_url: string;
     media_type: string;
   }[];
   type?: number | string;
@@ -147,11 +147,9 @@ const FindDonations: React.FC = () => {
   if (donations) {
     const uniqueCategories = new Set<string>();
     donations.forEach((donation) => {
-      // Handle both tag formats - could be direct or through type relationship
-      if (donation.tag?.some((t: { name: string }) => t.name)) {
-        donation.tag?.forEach((t: { name: string }) =>
-          uniqueCategories.add(t.name)
-        );
+      // Handle tag as a direct object, not an array
+      if (donation.tag?.name) {
+        uniqueCategories.add(donation.tag.name);
       } else if (donation.type) {
         // Handle if type is directly available
         const typeName =
@@ -199,11 +197,10 @@ const FindDonations: React.FC = () => {
         donation.description?.toLowerCase().includes(searchQuery.toLowerCase())
       : true;
 
-    // Handle different tag data structures
+    // Handle tag as a direct object, not an array
     const matchesCategory =
       activeFilter === "All" ||
-      (donation.tag &&
-        donation.tag.some((t: { name: string }) => t.name === activeFilter)) ||
+      donation.tag?.name === activeFilter ||
       (donation.type &&
         (typeof donation.type === "number"
           ? getTagNameById(donation.type) === activeFilter
@@ -221,7 +218,7 @@ const FindDonations: React.FC = () => {
 
   // When rendering donation images
   const getImageUrl = (image: DonationImage) => {
-    return image.url || image.image_url || "";
+    return image.url || image.media_url || "";
   };
 
   // Helper function to normalize donor data
@@ -496,13 +493,16 @@ const FindDonations: React.FC = () => {
                           : donation.donation_id
                         : undefined,
                       tag: donation.tag
-                        ? donation.tag.map((tag: DonationTag) => ({
-                            id:
-                              typeof tag.id === "string"
-                                ? parseInt(tag.id, 10)
-                                : tag.id,
-                            name: tag.name,
-                          }))
+                        ? [
+                            {
+                              // Wrap in array for consistency in rendering
+                              id:
+                                typeof donation.tag.id === "string"
+                                  ? parseInt(donation.tag.id, 10)
+                                  : donation.tag.id,
+                              name: donation.tag.name,
+                            },
+                          ]
                         : donation.type
                         ? [
                             {
@@ -538,7 +538,7 @@ const FindDonations: React.FC = () => {
                                   typeof image.id === "string"
                                     ? parseInt(image.id, 10)
                                     : image.id,
-                                image_url: image.image_url,
+                                media_url: image.media_url,
                                 media_type: image.media_type || "image",
                               })
                             )
@@ -574,9 +574,10 @@ const FindDonations: React.FC = () => {
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                           <div className="absolute top-4 left-4 z-10">
                             <span className="px-4 py-1.5 rounded-full text-white text-xs font-semibold uppercase tracking-wider bg-gradient-to-r from-blue-600 to-blue-700">
-                              {normalizedDonation.tag
-                                ?.map((t) => t.name)
-                                .join(", ") || "Miscellaneous"}
+                              {normalizedDonation.tag &&
+                              normalizedDonation.tag.length > 0
+                                ? normalizedDonation.tag[0].name
+                                : "Miscellaneous"}
                             </span>
                           </div>
                           <div className="absolute bottom-4 left-4 right-4 transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 flex justify-between items-center z-10">

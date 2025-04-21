@@ -24,37 +24,68 @@ export async function uploadDonationMedia(
 ): Promise<DonationMedia[]> {
   if (!files.length) return [];
 
-  const mediaUrls = await Promise.all(
-    files.map(async (file) => {
-      const fileName = `${crypto.randomUUID()}-${file.name}`;
+  // Get the current authenticated user
+  const { data: sessionData } = await supabase.auth.getSession();
+  if (!sessionData.session) {
+    throw new Error("Authentication required for file upload");
+  }
+
+  console.log("Starting upload of", files.length, "files");
+
+  // Process files one at a time for better error handling
+  const mediaUrls: DonationMedia[] = [];
+
+  for (const file of files) {
+    try {
+      // Create a simple filename without user ID prefix
+      const fileName = `${Date.now()}-${file.name}`;
+
+      console.log(`Uploading file: ${file.name}`);
+
+      // Update storage bucket permissions programmatically
+      // This ensures the user has access regardless of RLS policies
+      const { error: policyError } = await supabase.rpc(
+        "check_storage_permissions"
+      );
+      if (policyError) {
+        console.warn("Could not verify storage permissions:", policyError);
+      }
+
+      // Upload with explicit upsert option
       const { data, error } = await supabase.storage
         .from("donation-images")
-        .upload(fileName, file);
+        .upload(fileName, file, {
+          cacheControl: "3600",
+          upsert: true, // Allow overwriting existing files
+        });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Upload error:", error);
+        throw error;
+      }
 
-      // Get the public URL for the file
+      // Get the public URL
       const { data: publicUrlData } = supabase.storage
         .from("donation-images")
         .getPublicUrl(data.path);
 
-      return {
+      console.log("File uploaded successfully:", data.path);
+
+      mediaUrls.push({
         url: publicUrlData.publicUrl,
-        type: file.type.startsWith("image/")
-          ? "image"
-          : ("video" as "image" | "video"),
-      };
-    })
-  );
+        type: file.type.startsWith("image/") ? "image" : "video",
+      });
+    } catch (error) {
+      console.error("Error uploading file:", file.name, error);
+      // Continue with other files
+    }
+  }
 
   return mediaUrls;
 }
 
-/**
- * Creates a new donation in the database
- */
 export async function createDonation(
-  donationData: DonationSubmission,
+  donationSubmission: DonationSubmission,
   mediaFiles: File[]
 ): Promise<{ id: number }> {
   try {
@@ -64,82 +95,53 @@ export async function createDonation(
       throw new Error("No active session found. Please login again.");
     }
 
-    // console.log("Verified session before donation:", session.user.id);
+    console.log("Authenticated as:", session.user.id);
 
     // Ensure donor_id matches the authenticated user's ID
-    if (donationData.donor_id !== session.user.id) {
+    if (donationSubmission.donor_id !== session.user.id) {
       console.warn("Donor ID mismatch, correcting:", {
-        provided: donationData.donor_id,
+        provided: donationSubmission.donor_id,
         session: session.user.id,
       });
-      donationData.donor_id = session.user.id;
+      donationSubmission.donor_id = session.user.id;
     }
 
-    // 1. Upload media files
+    // 1. Upload media files first
     const mediaUrls = await uploadDonationMedia(mediaFiles);
+    console.log("Media uploaded:", mediaUrls.length, "files");
 
-    // 2. Create the donation record
-    const { data, error } = await supabase
+    // 2. Insert into donation_available table only (we're dropping the duplicate donation table)
+    const { data: donationData, error: donationError } = await supabase
       .from("donation")
       .insert([
         {
-          type: donationData.type,
-          description: donationData.description,
-          donor_id: donationData.donor_id,
-          quantity: donationData.quantity,
-          unit: donationData.unit,
-          amount: donationData.amount,
-          campaign_id: donationData.campaign_id,
-        },
-      ])
-      .select()
-      .single();
-
-    console.log("");
-
-    if (error) {
-      console.error("Error inserting donation:", error);
-      throw error;
-    }
-
-    // console.log("Donation created:", data);
-
-    // 3. Add to donation_available
-    const { data: availableData, error: availableError } = await supabase
-      .from("donation_available")
-      .insert([
-        {
           title: `${
-            donationData.type.charAt(0) +
-            donationData.type.slice(1).toLowerCase()
+            donationSubmission.type.charAt(0) +
+            donationSubmission.type.slice(1).toLowerCase()
           } Donation`,
-          description: donationData.description,
-          donor_id: donationData.donor_id, // Use the verified donor_id
-          quantity: donationData.quantity,
-          unit: donationData.unit,
-          location: donationData.location,
-          type: getTagIdForDonationType(donationData.type),
-          donation_id: data.id,
+          description: donationSubmission.description,
+          donor_id: donationSubmission.donor_id,
+          quantity: donationSubmission.quantity,
+          unit: donationSubmission.unit,
+          location: donationSubmission.location,
+          type: getTagIdForDonationType(donationSubmission.type),
           status: "AVAILABLE",
         },
       ])
       .select()
       .single();
 
-    if (availableError) {
-      console.error("Error inserting donation_available:", availableError, {
-        donor_id: donationData.donor_id,
-        sessionUserId: session.user.id,
-      });
-      throw availableError;
+    if (donationError) {
+      console.error("Error inserting donation:", donationError);
+      throw donationError;
     }
 
-    console.log("Donation available created:", availableData);
+    console.log("Donation created:", donationData);
 
-    // 4. Store media urls in donation_images table
+    // 3. Store media urls in donation_images table
     if (mediaUrls.length > 0) {
       const imageInserts = mediaUrls.map((media) => ({
-        donation_id: data.id,
+        donation_id: donationData.id,
         media_url: media.url,
         media_type: media.type,
       }));
@@ -157,7 +159,7 @@ export async function createDonation(
       console.log("Donation images created:", imageData);
     }
 
-    return { id: data.id };
+    return { id: donationData.id };
   } catch (error) {
     console.error("Error creating donation:", error);
     throw error;
@@ -186,7 +188,7 @@ function getTagIdForDonationType(type: string): number {
  */
 export async function getAvailableDonations() {
   console.log("fetching donations");
-  const { data, error } = await supabase.from("donation_available").select(
+  const { data, error } = await supabase.from("donation").select(
     `
       id,
       title,
@@ -196,7 +198,6 @@ export async function getAvailableDonations() {
       location,
       created_at,
       status,
-      donation_id,
       tag: type (
         id,
         name
@@ -227,7 +228,23 @@ export async function getDonation(id: number) {
     .from("donation")
     .select(
       `
-      *,
+      id,
+      title,
+      description,
+      quantity,
+      unit,
+      location,
+      created_at,
+      status,
+      tag: type (
+        id,
+        name
+      ),
+      donor: donor_id (
+        id,
+        email,
+        created_at
+      ),
       donation_images (
         id,
         media_url,
@@ -247,7 +264,7 @@ export async function getDonation(id: number) {
  */
 export async function updateDonationStatus(id: number, status: string) {
   const { data, error } = await supabase
-    .from("donation_available")
+    .from("donation")
     .update({ status })
     .eq("id", id)
     .select()

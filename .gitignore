@@ -31,3 +31,4 @@ tast.json
 .env
 fix-rls-policies.sql
 supabase-rls-fix.md
+supabase-storage-rpc.sql

@@ -92,9 +92,27 @@ export function useFindDonations() {
   return useQuery({
     queryKey: ["findDonations"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("donation_available")
-        .select("*");
+      // Query the donation_available table
+      const { data, error } = await supabase.from("donation").select(`
+          id,
+          title,
+          description,
+          quantity,
+          unit,
+          location,
+          created_at,
+          status,
+          donor_id,
+          tag: type (
+            id,
+            name
+          ),
+          donation_images (
+            id,
+            media_url,
+            media_type
+          )
+        `);
 
       if (error) throw error;
       console.log("getAvailableDonations", data);
@@ -149,7 +167,7 @@ export function useUserDonations(userId: string) {
     queryKey: ["userDonations", userId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("donation_available")
+        .from("donation")
         .select(
           `
           id,
@@ -160,7 +178,6 @@ export function useUserDonations(userId: string) {
           location,
           created_at,
           status,
-          donation_id,
           tag: type (
             id,
             name
@@ -196,7 +213,7 @@ export function useDonationRequests(userId: string) {
           reason,
           status,
           created_at,
-          donation_available!donation_id (
+          donation!donation_id (
             title,
             description,
             quantity,
@@ -205,7 +222,7 @@ export function useDonationRequests(userId: string) {
             donor_id,
             donation_images (
               id,
-              image_url,
+              media_url,
               media_type
             )
           )
