@@ -1,0 +1,7 @@
+id,name,description,type,target,completed,ngo_id,started_by,created_at
+1,Education for Children,"Support education initiatives that help children from underserved communities access quality education and resources.",Education,20000,false,1,ef119957-3f57-4191-81f1-8c92fcece8d6,2025-04-15 10:00:00
+2,Clean Water Initiative,"Help provide clean and safe drinking water to communities facing water scarcity and quality issues.",Water,15000,false,4,ef119957-3f57-4191-81f1-8c92fcece8d6,2025-04-16 11:30:00
+3,Food for Every Child,"Support our program to provide nutritious meals to children in poverty-stricken areas around the world.",Food,25000,false,3,ef119957-3f57-4191-81f1-8c92fcece8d6,2025-04-17 09:15:00
+4,Medical Care for Rural Areas,"Provide essential medical supplies and healthcare services to underserved rural communities across India.",Healthcare,30000,false,6,ef119957-3f57-4191-81f1-8c92fcece8d6,2025-04-18 08:45:00
+5,Green Community Initiative,"Support environmental conservation through tree planting and sustainable community development programs.",Environment,12000,false,4,ef119957-3f57-4191-81f1-8c92fcece8d6,2025-04-19 13:20:00
+6,Empowering Women Entrepreneurs,"Provide training, resources, and micro-loans to help women start and grow their own businesses in rural communities.",Education,18000,false,6,ef119957-3f57-4191-81f1-8c92fcece8d6,2025-04-20 14:10:00

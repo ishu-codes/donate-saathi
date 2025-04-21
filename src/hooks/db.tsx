@@ -41,3 +41,26 @@ export function useTags() {
     refetchOnWindowFocus: false,
   });
 }
+
+export function useCampaigns() {
+  return useQuery({
+    queryKey: ["campaigns"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("campaign").select(
+        `id,
+          name,
+          description,
+          target,
+          completed,
+          tag: type (name),
+          ngo: ngo_id (name, location),
+          image`
+      );
+      if (error) throw new Error(error.message);
+      console.log("campaigns:", data);
+      return data;
+    },
+    staleTime: 1000 * 60 * 60, // Cache for 1 hr
+    refetchOnWindowFocus: false,
+  });
+}

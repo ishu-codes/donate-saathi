@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
   FaArrowRight,
-  FaRegClock,
+  // FaRegClock,
   FaHeartbeat,
   FaSearch,
   FaMapMarkerAlt,
@@ -13,125 +13,127 @@ import {
   FaUserPlus,
   FaCheck,
 } from "react-icons/fa";
+import { useCampaigns } from "@/hooks/db";
 
 const DonationCampaigns: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortOpen, setSortOpen] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<string>("Most Popular");
+  const { data: campaigns, isLoading, error } = useCampaigns();
 
   // Sample campaigns data - in a real app, this would come from an API
-  const campaigns = [
-    {
-      id: 1,
-      title: "Education for Children",
-      description:
-        "Support education initiatives that help children from underserved communities access quality education and resources.",
-      image:
-        "https://images.unsplash.com/photo-1580582932707-520aed937b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      raised: 12500,
-      goal: 20000,
-      daysLeft: 15,
-      category: "Education",
-      location: "Mumbai, India",
-      organizer: "Bright Future Foundation",
-      color: "bg-blue-600",
-      gradient: "from-blue-600 to-blue-700",
-    },
-    {
-      id: 2,
-      title: "Clean Water Initiative",
-      description:
-        "Help provide clean and safe drinking water to communities facing water scarcity and quality issues.",
-      image:
-        "https://images.unsplash.com/photo-1594398901394-4e34939a4fd0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      raised: 8300,
-      goal: 15000,
-      daysLeft: 22,
-      category: "Water",
-      location: "Chennai, India",
-      organizer: "Clean Water Alliance",
-      color: "bg-cyan-600",
-      gradient: "from-cyan-600 to-cyan-700",
-    },
-    {
-      id: 3,
-      title: "Food for Every Child",
-      description:
-        "Support our program to provide nutritious meals to children in poverty-stricken areas around the world.",
-      image:
-        "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      raised: 15800,
-      goal: 25000,
-      daysLeft: 18,
-      category: "Food",
-      location: "Delhi, India",
-      organizer: "Feed The Future",
-      color: "bg-yellow-600",
-      gradient: "from-yellow-600 to-yellow-700",
-    },
-    {
-      id: 4,
-      title: "Medical Care for Rural Areas",
-      description:
-        "Provide essential medical supplies and healthcare services to underserved rural communities across India.",
-      image:
-        "https://images.unsplash.com/photo-1631815588090-d4bfec5b7e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      raised: 18700,
-      goal: 30000,
-      daysLeft: 30,
-      category: "Healthcare",
-      location: "Rajasthan, India",
-      organizer: "Rural Health Mission",
-      color: "bg-red-600",
-      gradient: "from-red-600 to-red-700",
-    },
-    {
-      id: 5,
-      title: "Green Community Initiative",
-      description:
-        "Support environmental conservation through tree planting and sustainable community development programs.",
-      image:
-        "https://images.unsplash.com/photo-1576766125535-b04e15fd0273?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      raised: 6200,
-      goal: 12000,
-      daysLeft: 25,
-      category: "Environment",
-      location: "Bangalore, India",
-      organizer: "Green Earth Society",
-      color: "bg-green-600",
-      gradient: "from-green-600 to-green-700",
-    },
-    {
-      id: 6,
-      title: "Empowering Women Entrepreneurs",
-      description:
-        "Provide training, resources, and micro-loans to help women start and grow their own businesses in rural communities.",
-      image:
-        "https://images.unsplash.com/photo-1573875133178-5b122c3fcc2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      raised: 10900,
-      goal: 18000,
-      daysLeft: 40,
-      category: "Education",
-      location: "Kolkata, India",
-      organizer: "Women Empowerment Trust",
-      color: "bg-purple-600",
-      gradient: "from-purple-600 to-purple-700",
-    },
-  ];
+  // const campaigns = [
+  //   {
+  //     id: 1,
+  //     title: "Education for Children",
+  //     description:
+  //       "Support education initiatives that help children from underserved communities access quality education and resources.",
+  //     image:
+  //       "https://images.unsplash.com/photo-1580582932707-520aed937b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  //     raised: 12500,
+  //     goal: 20000,
+  //     daysLeft: 15,
+  //     category: "Education",
+  //     location: "Mumbai, India",
+  //     organizer: "Bright Future Foundation",
+  //     color: "bg-blue-600",
+  //     gradient: "from-blue-600 to-blue-700",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Clean Water Initiative",
+  //     description:
+  //       "Help provide clean and safe drinking water to communities facing water scarcity and quality issues.",
+  //     image:
+  //       "https://images.unsplash.com/photo-1594398901394-4e34939a4fd0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  //     raised: 8300,
+  //     goal: 15000,
+  //     daysLeft: 22,
+  //     category: "Water",
+  //     location: "Chennai, India",
+  //     organizer: "Clean Water Alliance",
+  //     color: "bg-cyan-600",
+  //     gradient: "from-cyan-600 to-cyan-700",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Food for Every Child",
+  //     description:
+  //       "Support our program to provide nutritious meals to children in poverty-stricken areas around the world.",
+  //     image:
+  //       "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  //     raised: 15800,
+  //     goal: 25000,
+  //     daysLeft: 18,
+  //     category: "Food",
+  //     location: "Delhi, India",
+  //     organizer: "Feed The Future",
+  //     color: "bg-yellow-600",
+  //     gradient: "from-yellow-600 to-yellow-700",
+  //   },
+  //   {
+  //     id: 4,
+  //     title: "Medical Care for Rural Areas",
+  //     description:
+  //       "Provide essential medical supplies and healthcare services to underserved rural communities across India.",
+  //     image:
+  //       "https://images.unsplash.com/photo-1631815588090-d4bfec5b7e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  //     raised: 18700,
+  //     goal: 30000,
+  //     daysLeft: 30,
+  //     category: "Healthcare",
+  //     location: "Rajasthan, India",
+  //     organizer: "Rural Health Mission",
+  //     color: "bg-red-600",
+  //     gradient: "from-red-600 to-red-700",
+  //   },
+  //   {
+  //     id: 5,
+  //     title: "Green Community Initiative",
+  //     description:
+  //       "Support environmental conservation through tree planting and sustainable community development programs.",
+  //     image:
+  //       "https://images.unsplash.com/photo-1576766125535-b04e15fd0273?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  //     raised: 6200,
+  //     goal: 12000,
+  //     daysLeft: 25,
+  //     category: "Environment",
+  //     location: "Bangalore, India",
+  //     organizer: "Green Earth Society",
+  //     color: "bg-green-600",
+  //     gradient: "from-green-600 to-green-700",
+  //   },
+  //   {
+  //     id: 6,
+  //     title: "Empowering Women Entrepreneurs",
+  //     description:
+  //       "Provide training, resources, and micro-loans to help women start and grow their own businesses in rural communities.",
+  //     image:
+  //       "https://images.unsplash.com/photo-1573875133178-5b122c3fcc2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  //     raised: 10900,
+  //     goal: 18000,
+  //     // daysLeft: 40,
+  //     category: "Education",
+  //     location: "Kolkata, India",
+  //     organizer: "Women Empowerment Trust",
+  //     color: "bg-purple-600",
+  //     // gradient: "from-purple-600 to-purple-700",
+  //   },
+  // ];
 
   // Filter categories - derived from the campaigns
-  const categories = ["All", ...new Set(campaigns.map((c) => c.category))];
+  const categories = ["All", ...new Set(campaigns?.map((c) => c.tag?.name))];
 
   // Filter campaigns based on search and category
-  const filteredCampaigns = campaigns.filter((campaign) => {
+  const filteredCampaigns = campaigns?.filter((campaign) => {
     const matchesSearch = searchQuery
-      ? campaign.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ? campaign.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         campaign.description.toLowerCase().includes(searchQuery.toLowerCase())
       : true;
 
     const matchesCategory =
-      activeFilter === "All" || campaign.category === activeFilter;
+      activeFilter === "All" || campaign?.tag.name === activeFilter;
 
     return matchesSearch && matchesCategory;
   });
@@ -230,9 +232,9 @@ const DonationCampaigns: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.6 }}
           >
-            {categories.map((category) => (
+            {categories.map((category, idx) => (
               <button
-                key={category}
+                key={idx}
                 onClick={() => setActiveFilter(category)}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                   activeFilter === category
@@ -256,7 +258,7 @@ const DonationCampaigns: React.FC = () => {
                 ? "All Campaigns"
                 : activeFilter + " Campaigns"}
               <span className="ml-2 text-lg font-normal text-gray-500">
-                ({filteredCampaigns.length})
+                ({filteredCampaigns?.length})
               </span>
             </h2>
 
@@ -269,7 +271,7 @@ const DonationCampaigns: React.FC = () => {
             </Link>
           </div>
 
-          {filteredCampaigns.length === 0 ? (
+          {filteredCampaigns?.length === 0 ? (
             <div className="text-center py-16">
               <h3 className="text-xl text-gray-600 mb-4">No campaigns found</h3>
               <p className="text-gray-500 mb-6">
@@ -288,9 +290,9 @@ const DonationCampaigns: React.FC = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredCampaigns.map((campaign) => (
+              {filteredCampaigns?.map((campaign, idx) => (
                 <motion.div
-                  key={campaign.id}
+                  key={idx}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -300,46 +302,46 @@ const DonationCampaigns: React.FC = () => {
                   <div className="relative h-60 overflow-hidden">
                     <img
                       src={campaign.image}
-                      alt={campaign.title}
+                      alt={campaign.name}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     <div className="absolute top-4 left-4 z-10">
                       <span
-                        className={`px-4 py-1.5 rounded-full text-white text-xs font-semibold uppercase tracking-wider bg-gradient-to-r ${campaign.gradient}`}
+                        className={`px-4 py-1.5 rounded-full text-white text-xs font-semibold uppercase tracking-wider bg-gradient-to-r from-green-600 to-green-700`}
                       >
-                        {campaign.category}
+                        {campaign.tag?.name}
                       </span>
                     </div>
                     <div className="absolute bottom-4 left-4 right-4 transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 flex justify-between items-center z-10">
                       <span className="text-white text-sm bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1.5">
-                        <FaMapMarkerAlt size={12} /> {campaign.location}
+                        <FaMapMarkerAlt size={12} /> {campaign.ngo?.location}
                       </span>
-                      <span className="text-white text-sm bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1.5">
+                      {/* <span className="text-white text-sm bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1.5">
                         <FaRegClock size={12} /> {campaign.daysLeft} days left
-                      </span>
+                      </span> */}
                     </div>
                   </div>
 
                   <div className="p-6">
                     <h3 className="text-xl font-semibold text-gray-800 mb-2 group-hover:text-green-600 transition-colors duration-300">
-                      {campaign.title}
+                      {campaign?.name}
                     </h3>
                     <p className="text-sm text-gray-500 mb-2">
-                      by {campaign.organizer}
+                      by {campaign.ngo?.name}
                     </p>
                     <p className="text-gray-600 mb-6 line-clamp-2 group-hover:line-clamp-none transition-all duration-500">
-                      {campaign.description}
+                      {campaign?.description}
                     </p>
 
                     <div className="mb-6">
                       <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                         <motion.div
-                          className={`h-full ${campaign.color} rounded-full`}
+                          className={`h-full bg-green-600 rounded-full`}
                           initial={{ width: 0 }}
                           whileInView={{
                             width: `${
-                              (campaign.raised / campaign.goal) * 100
+                              (campaign?.completed / campaign?.target) * 100
                             }%`,
                           }}
                           transition={{ duration: 1, delay: 0.2 }}
@@ -348,10 +350,10 @@ const DonationCampaigns: React.FC = () => {
                       </div>
                       <div className="flex justify-between mt-2 text-sm">
                         <span className="text-gray-800 font-semibold">
-                          ₹{campaign.raised.toLocaleString()}
+                          ₹{campaign.completed.toLocaleString()}
                         </span>
                         <span className="text-gray-500">
-                          of ₹{campaign.goal.toLocaleString()}
+                          of ₹{campaign.target.toLocaleString()}
                         </span>
                       </div>
                     </div>
@@ -359,10 +361,10 @@ const DonationCampaigns: React.FC = () => {
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-500 flex items-center gap-1.5">
                         <FaHeartbeat className="text-red-500" />{" "}
-                        {Math.floor(campaign.raised / 100)} donors
+                        {Math.floor(campaign.completed / 100)} donors
                       </span>
                       <motion.button
-                        className={`flex items-center gap-2 px-4 py-2 text-white rounded-md shadow-sm transition-all duration-300 bg-gradient-to-r ${campaign.gradient} hover:shadow-lg transform hover:-translate-y-1`}
+                        className={`flex items-center gap-2 px-4 py-2 text-white rounded-md shadow-sm transition-all duration-300 bg-gradient-to-r from-green-600 to-green-700 hover:shadow-lg transform hover:-translate-y-1`}
                         whileTap={{ scale: 0.98 }}
                       >
                         Donate Now <FaArrowRight size={12} />
@@ -374,7 +376,7 @@ const DonationCampaigns: React.FC = () => {
             </div>
           )}
 
-          {filteredCampaigns.length > 0 && (
+          {filteredCampaigns && filteredCampaigns.length > 0 && (
             <div className="text-center mt-16">
               <motion.button
                 className="relative overflow-hidden px-10 py-4 border-2 border-green-600 text-green-600 font-semibold rounded-md hover:text-white transition-colors duration-500 group"
