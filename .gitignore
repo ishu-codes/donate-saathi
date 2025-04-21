@@ -26,3 +26,8 @@ dist-ssr
 # Test files
 tables.sql
 tast.json
+
+# Other files
+.env
+fix-rls-policies.sql
+supabase-rls-fix.md
