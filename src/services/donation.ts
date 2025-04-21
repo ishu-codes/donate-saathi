@@ -64,7 +64,7 @@ export async function createDonation(
       throw new Error("No active session found. Please login again.");
     }
 
-    console.log("Verified session before donation:", session.user.id);
+    // console.log("Verified session before donation:", session.user.id);
 
     // Ensure donor_id matches the authenticated user's ID
     if (donationData.donor_id !== session.user.id) {
@@ -74,11 +74,9 @@ export async function createDonation(
       });
       donationData.donor_id = session.user.id;
     }
-    console.log("Works well till here");
 
     // 1. Upload media files
     const mediaUrls = await uploadDonationMedia(mediaFiles);
-    console.log("Uploaded media files:", mediaUrls.length);
 
     // 2. Create the donation record
     const { data, error } = await supabase
@@ -104,7 +102,7 @@ export async function createDonation(
       throw error;
     }
 
-    console.log("Donation created:", data);
+    // console.log("Donation created:", data);
 
     // 3. Add to donation_available
     const { data: availableData, error: availableError } = await supabase
@@ -142,7 +140,7 @@ export async function createDonation(
     if (mediaUrls.length > 0) {
       const imageInserts = mediaUrls.map((media) => ({
         donation_id: data.id,
-        image_url: media.url,
+        media_url: media.url,
         media_type: media.type,
       }));
 
@@ -210,7 +208,7 @@ export async function getAvailableDonations() {
       ),
       donation_images (
         id,
-        image_url,
+        media_url,
         media_type
       )
     `
@@ -232,7 +230,7 @@ export async function getDonation(id: number) {
       *,
       donation_images (
         id,
-        image_url,
+        media_url,
         media_type
       )
     `

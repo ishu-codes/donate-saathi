@@ -87,7 +87,7 @@ create table public.donation_available (
 create table public.donation_images (
   id serial not null,
   donation_id integer not null,
-  image_url text not null,
+  media_url text not null,
   uploaded_at timestamp without time zone null default CURRENT_TIMESTAMP,
   constraint donation_images_pkey primary key (id),
   constraint donation_id_fkey foreign KEY (donation_id) references donation_available (id) on delete CASCADE

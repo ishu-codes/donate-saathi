@@ -167,7 +167,7 @@ export function useUserDonations(userId: string) {
           ),
           donation_images (
             id,
-            image_url,
+            media_url,
             media_type
           )
         `
