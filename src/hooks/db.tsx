@@ -47,7 +47,7 @@ export function useNgos() {
         };
       });
     },
-    staleTime: 1000 * 60 * 60, // Cache for 1 hr
+    staleTime: 1000 * 60 * 60 * 60, // Cache for 1 hr
     refetchOnWindowFocus: false, // Disable refetch on window focus
   });
 }
@@ -60,7 +60,7 @@ export function useTags() {
       if (error) throw new Error(error.message);
       return data;
     },
-    staleTime: 1000 * 60 * 60, // Cache for 1 hr
+    staleTime: 1000 * 60 * 60 * 60, // Cache for 1 hr
     refetchOnWindowFocus: false,
   });
 }
@@ -83,7 +83,7 @@ export function useCampaigns() {
       console.log("campaigns:", data);
       return data;
     },
-    staleTime: 1000 * 60 * 60, // Cache for 1 hr
+    staleTime: 1000 * 60 * 60 * 60, // Cache for 1 hr
     refetchOnWindowFocus: false,
   });
 }
@@ -118,7 +118,7 @@ export function useFindDonations() {
       console.log("getAvailableDonations", data);
       return data;
     },
-    staleTime: 1000 * 60, // Cache for 1 minute
+    staleTime: 1000 * 60 * 60, // Cache for 1 minute
     refetchOnWindowFocus: false,
   });
 }
@@ -195,7 +195,7 @@ export function useUserDonations(userId: string) {
       return data;
     },
     enabled: !!userId,
-    staleTime: 1000 * 60, // Cache for 1 minute
+    staleTime: 1000 * 60 * 60, // Cache for 1 minute
     refetchOnWindowFocus: false,
   });
 }
@@ -234,7 +234,7 @@ export function useDonationRequests(userId: string) {
       return data;
     },
     enabled: !!userId,
-    staleTime: 1000 * 60,
+    staleTime: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
   });
 }
