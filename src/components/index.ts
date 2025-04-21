@@ -6,6 +6,7 @@ import NewDonation from "./new-donation";
 import Recent from "./recent";
 import Settings from "./settings";
 import { Logout } from "./auth";
+import { EventsPage } from "./events";
 
 export {
   ThemeProvider,
@@ -16,4 +17,5 @@ export {
   Recent,
   Settings,
   Logout,
+  EventsPage,
 };

@@ -804,7 +804,7 @@ const NewLandingPage: React.FC = () => {
               <div className="relative h-60 lg:h-72 overflow-hidden rounded-2xl shadow-xl">
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
                 <img
-                  src="https://images.unsplash.com/photo-1469571486292-b53601010376?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                  src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                   alt="Healthcare volunteers"
                   className="w-full h-full object-cover transition-transform duration-10000 hover:scale-110"
                 />
@@ -1057,13 +1057,13 @@ const NewLandingPage: React.FC = () => {
             whileHover={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.1)" }}
             whileTap={{ scale: 0.98 }}
           >
-            <span className="relative z-10 flex items-center gap-2">
+            <Link to="/events" className="relative z-10 flex items-center gap-2">
               View All Events
               <FaArrowRight
                 size={14}
                 className="transform transition-transform duration-300 group-hover:translate-x-1"
               />
-            </span>
+            </Link>
             <span className="absolute inset-0 bg-green-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></span>
           </motion.button>
         </div>
@@ -1395,7 +1395,7 @@ const NewLandingPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {[
             {
               name: "Arun Patel",
@@ -1414,6 +1414,15 @@ const NewLandingPage: React.FC = () => {
               rating: 5,
               testimonial:
                 "Our partnership with DonateSaathi has transformed our corporate social responsibility efforts. Their team is professional, responsive, and truly committed to making a difference.",
+            },
+            {
+              name: "Rajesh Singh",
+              role: "NGO Director",
+              image:
+                "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+              rating: 5,
+              testimonial:
+                "As an NGO director, I've seen firsthand how DonateSaathi has increased our visibility and connected us with donors who share our mission. Their platform has been invaluable to our growth.",
             },
           ].map((testimonial, index) => (
             <motion.div
@@ -1451,17 +1460,6 @@ const NewLandingPage: React.FC = () => {
                 {testimonial.testimonial}
               </p>
             </motion.div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-5 gap-8 max-w-5xl mx-auto mt-16">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div
-              key={i}
-              className="flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all"
-            >
-              <div className="h-12 w-32 bg-gray-200 rounded"></div>
-            </div>
           ))}
         </div>
       </section>
@@ -1566,7 +1564,16 @@ const NewLandingPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
-          {[...Array(8)].map((_, index) => (
+          {[
+            "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", // Children smiling
+            "https://images.unsplash.com/photo-1635928168092-97133762eec4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", // Plantation drive
+            "https://images.unsplash.com/photo-1509099836639-18ba1795216d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", // Elderly support
+            "https://images.unsplash.com/photo-1556484687-30636164638b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", // Education
+            "https://images.unsplash.com/photo-1540317700647-ec69694d70d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", // Beach cleanup
+            "https://images.unsplash.com/photo-1593766788306-28561a605abd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", // Community work
+            "https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", // Helping hands
+            "https://images.unsplash.com/photo-1577896851231-70ef18881754?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", // Classroom
+          ].map((image, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, scale: 0.9 }}
@@ -1575,17 +1582,16 @@ const NewLandingPage: React.FC = () => {
               viewport={{ once: true }}
               className="relative rounded-lg overflow-hidden group h-48 md:h-64"
             >
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <img
-                src={`https://images.unsplash.com/photo-${
-                  1550000000000 + index * 10000
-                }?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`}
+                src={image}
                 alt={`Gallery image ${index + 1}`}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-green-600 bg-opacity-0 group-hover:bg-opacity-40 flex items-center justify-center transition-all duration-300">
-                <span className="w-10 h-10 rounded-full bg-white text-green-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transform scale-0 group-hover:scale-100 transition-all duration-300">
-                  <FaArrowRight />
-                </span>
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                <button className="bg-white/80 backdrop-blur-sm text-green-600 px-4 py-2 rounded-full text-sm font-medium transform -translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                  View Image
+                </button>
               </div>
             </motion.div>
           ))}

@@ -17,6 +17,7 @@ import DonationCampaigns from "./components/campaigns/DonationCampaigns";
 import FindDonations from "./components/donations/FindDonations";
 import LandingLayout from "./components/landing-page/layout";
 import NewLandingPage from "./components/landing-page/LandingPage";
+import { EventsPage } from "./components/events";
 
 function App() {
   return (
@@ -50,6 +51,14 @@ function App() {
         element={
           <LandingLayout>
             <FindDonations />
+          </LandingLayout>
+        }
+      />
+      <Route
+        path="events"
+        element={
+          <LandingLayout>
+            <EventsPage />
           </LandingLayout>
         }
       />

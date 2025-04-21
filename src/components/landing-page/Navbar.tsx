@@ -11,6 +11,7 @@ const NAVS = [
     url: "/donation-campaigns",
     isDropdown: false,
   },
+  { title: "Events", url: "/events", isDropdown: false },
   { title: "Find Donations", url: "/find-donations", isDropdown: false },
   { title: "About us", url: "/about-us", isDropdown: false },
 ];
