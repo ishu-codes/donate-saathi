@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   FaArrowRight,
   FaCalendarAlt,
@@ -12,7 +12,79 @@ import {
   FaChevronUp,
   FaTruck,
   FaHandHoldingHeart,
+  FaPlus,
 } from "react-icons/fa";
+import { useFindDonations } from "@/hooks/db";
+import { RequestDonationDialog } from "./RequestDonationDialog";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+
+interface DonationTag {
+  id: number | string;
+  name: string;
+}
+
+interface DonationDonor {
+  id: string | number;
+  email: string;
+  created_at: string;
+}
+
+interface DonationImage {
+  id: number | string;
+  url?: string;
+  image_url?: string;
+  media_type?: string;
+}
+
+interface Donation {
+  id: number;
+  title: string;
+  description: string;
+  quantity: number;
+  unit: string;
+  location: string;
+  created_at: string;
+  status: string;
+  donation_id?: number;
+  tag?: DonationTag[];
+  donor?: DonationDonor;
+  donor_id?: string | number;
+  donation_images: DonationImage[];
+  type?: number | string;
+  user_profiles?: { location: string };
+  user?: {
+    id: string | number;
+    email: string;
+    name?: string;
+    username?: string;
+  };
+}
+
+// Type definitions for API response
+interface ApiDonation {
+  id: number | string;
+  title: string;
+  description: string;
+  quantity: number;
+  unit: string;
+  location: string;
+  created_at: string;
+  status: string;
+  donation_id: number | string;
+  tag: DonationTag[] | { id: number | string; name: string }[];
+  donor:
+    | { id: number | string; email: string; created_at: string }
+    | { id: number | string; email: string; created_at: string }[];
+  donation_images: {
+    id: number | string;
+    image_url: string;
+    media_type: string;
+  }[];
+  type?: number | string;
+  user_profiles?: { location: string };
+}
 
 const FindDonations: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<string>("All");
@@ -22,128 +94,44 @@ const FindDonations: React.FC = () => {
   const [locationFilter, setLocationFilter] = useState<string>("");
   const [locationOpen, setLocationOpen] = useState<boolean>(false);
 
-  // Sample donations data - in a real app, this would come from an API
-  const donations = [
-    {
-      id: 1,
-      title: "School Supplies Package",
-      description:
-        "Collection of notebooks, pens, pencils, rulers and other essential school supplies for underprivileged children.",
-      image:
-        "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      quantity: 25,
-      category: "Education",
-      location: "Mumbai, India",
-      donor: "City Book Store",
-      postedDate: "2023-10-15",
-      condition: "New",
-      color: "bg-blue-600",
-      gradient: "from-blue-600 to-blue-700",
-    },
-    {
-      id: 2,
-      title: "Winter Clothing Drive",
-      description:
-        "Warm jackets, sweaters, and blankets for homeless shelters and communities in need during winter.",
-      image:
-        "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      quantity: 50,
-      category: "Clothing",
-      location: "Delhi, India",
-      donor: "Fashion Forward Inc.",
-      postedDate: "2023-10-20",
-      condition: "Good",
-      color: "bg-purple-600",
-      gradient: "from-purple-600 to-purple-700",
-    },
-    {
-      id: 3,
-      title: "Food Supplies Package",
-      description:
-        "Non-perishable food items including rice, lentils, canned goods and other essentials for food banks.",
-      image:
-        "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      quantity: 100,
-      category: "Food",
-      location: "Bangalore, India",
-      donor: "Fresh Mart Grocers",
-      postedDate: "2023-10-18",
-      condition: "New",
-      color: "bg-yellow-600",
-      gradient: "from-yellow-600 to-yellow-700",
-    },
-    {
-      id: 4,
-      title: "Medical Supplies",
-      description:
-        "Basic first aid kits, over-the-counter medications, and hygiene products for rural health clinics.",
-      image:
-        "https://images.unsplash.com/photo-1631815588090-d4bfec5b7e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      quantity: 30,
-      category: "Healthcare",
-      location: "Chennai, India",
-      donor: "MediCare Pharmacy",
-      postedDate: "2023-10-12",
-      condition: "New",
-      color: "bg-red-600",
-      gradient: "from-red-600 to-red-700",
-    },
-    {
-      id: 5,
-      title: "Children's Books Collection",
-      description:
-        "Gently used children's books for establishing mini-libraries in underserved schools and community centers.",
-      image:
-        "https://images.unsplash.com/photo-1512820790803-83ca734da794?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      quantity: 200,
-      category: "Education",
-      location: "Hyderabad, India",
-      donor: "Reading Rainbow Foundation",
-      postedDate: "2023-10-22",
-      condition: "Good",
-      color: "bg-green-600",
-      gradient: "from-green-600 to-green-700",
-    },
-    {
-      id: 6,
-      title: "Farm Tools and Equipment",
-      description:
-        "Agricultural tools and basic farming equipment for small-scale farmers in rural communities.",
-      image:
-        "https://images.unsplash.com/photo-1598880513655-a8f135aa8861?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      quantity: 15,
-      category: "Agriculture",
-      location: "Punjab, India",
-      donor: "Green Fields Cooperative",
-      postedDate: "2023-10-10",
-      condition: "Refurbished",
-      color: "bg-amber-600",
-      gradient: "from-amber-600 to-amber-700",
-    },
-  ];
+  // Request dialog state
+  const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
+  const [selectedDonation, setSelectedDonation] = useState<{
+    id: number;
+    title: string;
+  } | null>(null);
 
-  const locations = [
-    "All Locations",
-    ...new Set(donations.map((d) => d.location)),
-  ];
-  const categories = ["All", ...new Set(donations.map((d) => d.category))];
+  const navigate = useNavigate();
+  const { data: donations, isLoading, error: fetchError } = useFindDonations();
+  const { user } = useAuth();
+  console.log("Raw donations data:", donations);
+  console.log("Current user:", user);
 
-  // Filter donations based on search, category, and location
-  const filteredDonations = donations.filter((donation) => {
-    const matchesSearch = searchQuery
-      ? donation.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        donation.description.toLowerCase().includes(searchQuery.toLowerCase())
-      : true;
+  const handleRequestItem = (donation: Donation) => {
+    if (!user) {
+      toast.error("Authentication required", {
+        description: "Please login to request donations.",
+      });
+      return;
+    }
 
-    const matchesCategory =
-      activeFilter === "All" || donation.category === activeFilter;
-    const matchesLocation =
-      locationFilter === "" ||
-      locationFilter === "All Locations" ||
-      donation.location === locationFilter;
+    setSelectedDonation({
+      id: donation.id,
+      title: donation.title,
+    });
+    setIsRequestDialogOpen(true);
+  };
 
-    return matchesSearch && matchesCategory && matchesLocation;
-  });
+  const handleCreateDonation = () => {
+    if (!user) {
+      toast.error("Authentication required", {
+        description: "Please login to offer donations.",
+      });
+      return;
+    }
+
+    navigate("/new-donation");
+  };
 
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = {
@@ -152,6 +140,114 @@ const FindDonations: React.FC = () => {
       day: "numeric",
     };
     return new Date(dateString).toLocaleDateString("en-US", options);
+  };
+
+  // Extract unique categories from donations
+  const categories = ["All"];
+  if (donations) {
+    const uniqueCategories = new Set<string>();
+    donations.forEach((donation) => {
+      // Handle both tag formats - could be direct or through type relationship
+      if (donation.tag?.some((t: { name: string }) => t.name)) {
+        donation.tag?.forEach((t: { name: string }) =>
+          uniqueCategories.add(t.name)
+        );
+      } else if (donation.type) {
+        // Handle if type is directly available
+        const typeName =
+          typeof donation.type === "number"
+            ? getTagNameById(donation.type)
+            : donation.type;
+        if (typeName) uniqueCategories.add(typeName);
+      }
+    });
+    categories.push(...Array.from(uniqueCategories));
+  }
+
+  // Helper function to get tag name by ID
+  function getTagNameById(tagId: number): string {
+    const tagMap: Record<number, string> = {
+      1: "Food",
+      2: "Clothes",
+      3: "Medicine",
+      4: "Books",
+      5: "Funds",
+      6: "Other",
+    };
+    return tagMap[tagId] || "Other";
+  }
+
+  // Extract unique locations from donations
+  const locations = ["All Locations"];
+  if (donations) {
+    const uniqueLocations = new Set<string>();
+    donations.forEach((donation) => {
+      // Handle both structures
+      if (donation.location) {
+        uniqueLocations.add(donation.location);
+      } else if (donation.user_profiles?.location) {
+        uniqueLocations.add(donation.user_profiles.location);
+      }
+    });
+    locations.push(...Array.from(uniqueLocations));
+  }
+
+  // Filter donations based on search, category, and location
+  const filteredDonations = donations?.filter((donation) => {
+    const matchesSearch = searchQuery
+      ? donation.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        donation.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      : true;
+
+    // Handle different tag data structures
+    const matchesCategory =
+      activeFilter === "All" ||
+      (donation.tag &&
+        donation.tag.some((t: { name: string }) => t.name === activeFilter)) ||
+      (donation.type &&
+        (typeof donation.type === "number"
+          ? getTagNameById(donation.type) === activeFilter
+          : donation.type === activeFilter));
+
+    // Handle different location data structures
+    const matchesLocation =
+      locationFilter === "" ||
+      locationFilter === "All Locations" ||
+      donation.location === locationFilter ||
+      donation.user_profiles?.location === locationFilter;
+
+    return matchesSearch && matchesCategory && matchesLocation;
+  });
+
+  // When rendering donation images
+  const getImageUrl = (image: DonationImage) => {
+    return image.url || image.image_url || "";
+  };
+
+  // Helper function to normalize donor data
+  const normalizeDonor = (donorData: ApiDonation["donor"]): DonationDonor => {
+    // If donor is an array, take the first item
+    if (Array.isArray(donorData)) {
+      return {
+        id: donorData[0]?.id
+          ? typeof donorData[0].id === "string"
+            ? parseInt(donorData[0].id, 10)
+            : donorData[0].id
+          : 0,
+        email: donorData[0]?.email || "",
+        created_at: donorData[0]?.created_at || "",
+      };
+    }
+    // If donor is already an object
+    return {
+      id: donorData?.id
+        ? typeof donorData.id === "string"
+          ? parseInt(donorData.id, 10)
+          : donorData.id
+        : 0,
+      email: donorData?.email || "",
+      created_at: donorData?.created_at || "",
+    };
   };
 
   return (
@@ -219,9 +315,9 @@ const FindDonations: React.FC = () => {
               {sortOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-20 overflow-hidden">
                   {["Most Recent", "Oldest First", "A-Z", "Z-A"].map(
-                    (option) => (
+                    (option, idx) => (
                       <button
-                        key={option}
+                        key={idx}
                         onClick={() => {
                           setSortBy(option);
                           setSortOpen(false);
@@ -255,9 +351,9 @@ const FindDonations: React.FC = () => {
 
               {locationOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-20 overflow-hidden max-h-60 overflow-y-auto">
-                  {locations.map((location) => (
+                  {locations.map((location, idx) => (
                     <button
-                      key={location}
+                      key={idx}
                       onClick={() => {
                         setLocationFilter(
                           location === "All Locations" ? "" : location
@@ -286,9 +382,9 @@ const FindDonations: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.6 }}
           >
-            {categories.map((category) => (
+            {categories.map((category, idx) => (
               <button
-                key={category}
+                key={idx}
                 onClick={() => setActiveFilter(category)}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                   activeFilter === category
@@ -312,20 +408,41 @@ const FindDonations: React.FC = () => {
                 ? "All Donations"
                 : activeFilter + " Donations"}
               <span className="ml-2 text-lg font-normal text-gray-500">
-                ({filteredDonations.length})
+                ({filteredDonations?.length})
               </span>
             </h2>
 
-            <Link
-              to="/dashboard/donations/offer"
-              className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            <Button
+              onClick={handleCreateDonation}
+              className="inline-flex items-center gap-2 bg-blue-600 text-white hover:bg-blue-700"
             >
-              <FaHandHoldingHeart size={16} />
+              <FaPlus size={14} />
               <span>Offer Donation</span>
-            </Link>
+            </Button>
           </div>
 
-          {filteredDonations.length === 0 ? (
+          {isLoading ? (
+            <div className="text-center py-16">
+              <h3 className="text-xl text-gray-600 mb-4">
+                Loading donations...
+              </h3>
+            </div>
+          ) : fetchError ? (
+            <div className="text-center py-16">
+              <h3 className="text-xl text-gray-600 mb-4">
+                Error loading donations
+              </h3>
+              <p className="text-gray-500 mb-6">
+                {fetchError.message || "An unknown error occurred"}
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          ) : filteredDonations?.length === 0 ? (
             <div className="text-center py-16">
               <h3 className="text-xl text-gray-600 mb-4">No donations found</h3>
               <p className="text-gray-500 mb-6">
@@ -345,82 +462,185 @@ const FindDonations: React.FC = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredDonations.map((donation) => (
-                <motion.div
-                  key={donation.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className="group bg-white rounded-xl overflow-hidden border border-gray-100 shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2"
-                >
-                  <div className="relative h-56 overflow-hidden">
-                    <img
-                      src={donation.image}
-                      alt={donation.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div className="absolute top-4 left-4 z-10">
-                      <span
-                        className={`px-4 py-1.5 rounded-full text-white text-xs font-semibold uppercase tracking-wider bg-gradient-to-r ${donation.gradient}`}
+              {filteredDonations
+                ?.map((donation: Donation) => {
+                  // Skip if essential properties are missing
+                  if (!donation.title || !donation.description) {
+                    console.warn(
+                      "Skipping donation with missing data:",
+                      donation
+                    );
+                    return null;
+                  }
+
+                  // Try to normalize the donation data regardless of structure
+                  try {
+                    const normalizedDonation: Donation = {
+                      id:
+                        typeof donation.id === "string"
+                          ? parseInt(donation.id, 10)
+                          : donation.id,
+                      title: donation.title,
+                      description: donation.description,
+                      quantity: donation.quantity || 0,
+                      unit: donation.unit || "",
+                      location:
+                        donation.location ||
+                        donation.user_profiles?.location ||
+                        "Unknown",
+                      created_at: donation.created_at,
+                      status: donation.status || "AVAILABLE",
+                      donation_id: donation.donation_id
+                        ? typeof donation.donation_id === "string"
+                          ? parseInt(donation.donation_id, 10)
+                          : donation.donation_id
+                        : undefined,
+                      tag: donation.tag
+                        ? donation.tag.map((tag: DonationTag) => ({
+                            id:
+                              typeof tag.id === "string"
+                                ? parseInt(tag.id, 10)
+                                : tag.id,
+                            name: tag.name,
+                          }))
+                        : donation.type
+                        ? [
+                            {
+                              id:
+                                typeof donation.type === "string"
+                                  ? parseInt(donation.type, 10)
+                                  : donation.type,
+                              name: getTagNameById(
+                                typeof donation.type === "string"
+                                  ? parseInt(donation.type, 10)
+                                  : donation.type
+                              ),
+                            },
+                          ]
+                        : [],
+                      donor: donation.donor
+                        ? normalizeDonor(donation.donor)
+                        : {
+                            id: donation.donor_id || 0,
+                            email:
+                              donation.user?.email ||
+                              donation.user?.username ||
+                              "Anonymous",
+                            created_at:
+                              donation.created_at || new Date().toISOString(),
+                          },
+                      donation_images:
+                        donation.donation_images &&
+                        donation.donation_images.length
+                          ? donation.donation_images.map(
+                              (image: DonationImage) => ({
+                                id:
+                                  typeof image.id === "string"
+                                    ? parseInt(image.id, 10)
+                                    : image.id,
+                                image_url: image.image_url,
+                                media_type: image.media_type || "image",
+                              })
+                            )
+                          : [],
+                    };
+
+                    return (
+                      <motion.div
+                        key={normalizedDonation.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
+                        className="group bg-white rounded-xl overflow-hidden border border-gray-100 shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2"
                       >
-                        {donation.category}
-                      </span>
-                    </div>
-                    <div className="absolute bottom-4 left-4 right-4 transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 flex justify-between items-center z-10">
-                      <span className="text-white text-sm bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1.5">
-                        <FaMapMarkerAlt size={12} /> {donation.location}
-                      </span>
-                      <span className="text-white text-sm bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1.5">
-                        <FaCalendarAlt size={12} /> Posted{" "}
-                        {formatDate(donation.postedDate)}
-                      </span>
-                    </div>
-                  </div>
+                        <div className="relative h-56 overflow-hidden">
+                          {normalizedDonation.donation_images &&
+                          normalizedDonation.donation_images.length > 0 ? (
+                            <img
+                              src={getImageUrl(
+                                normalizedDonation.donation_images[0]
+                              )}
+                              alt={normalizedDonation.title}
+                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                              <span className="text-gray-400">
+                                No image available
+                              </span>
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                          <div className="absolute top-4 left-4 z-10">
+                            <span className="px-4 py-1.5 rounded-full text-white text-xs font-semibold uppercase tracking-wider bg-gradient-to-r from-blue-600 to-blue-700">
+                              {normalizedDonation.tag
+                                ?.map((t) => t.name)
+                                .join(", ") || "Miscellaneous"}
+                            </span>
+                          </div>
+                          <div className="absolute bottom-4 left-4 right-4 transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 flex justify-between items-center z-10">
+                            <span className="text-white text-sm bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1.5">
+                              <FaMapMarkerAlt size={12} />{" "}
+                              {normalizedDonation.location || "No location"}
+                            </span>
+                            <span className="text-white text-sm bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1.5">
+                              <FaCalendarAlt size={12} /> Posted{" "}
+                              {formatDate(normalizedDonation.created_at)}
+                            </span>
+                          </div>
+                        </div>
 
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors duration-300">
-                      {donation.title}
-                    </h3>
-                    <p className="text-sm text-gray-500 mb-2">
-                      Offered by {donation.donor}
-                    </p>
-                    <p className="text-gray-600 mb-6 line-clamp-2 group-hover:line-clamp-none transition-all duration-500">
-                      {donation.description}
-                    </p>
+                        <div className="p-6">
+                          <h3 className="text-xl font-semibold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                            {normalizedDonation.title}
+                          </h3>
+                          <p className="text-sm text-gray-500 mb-2">
+                            Offered by{" "}
+                            {normalizedDonation.donor?.email?.split("@")[0] ||
+                              "Anonymous"}
+                          </p>
+                          <p className="text-gray-600 mb-6 line-clamp-2 group-hover:line-clamp-none transition-all duration-500">
+                            {normalizedDonation.description}
+                          </p>
 
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="flex items-center gap-1.5 text-sm text-gray-600">
-                        <FaBoxOpen className="text-blue-500" />
-                        <span>
-                          Quantity: <strong>{donation.quantity}</strong>
-                        </span>
-                      </div>
+                          <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-1.5 text-sm text-gray-600">
+                              <FaBoxOpen className="text-blue-500" />
+                              <span>
+                                Quantity:{" "}
+                                <strong>
+                                  {normalizedDonation.quantity}{" "}
+                                  {normalizedDonation.unit}
+                                </strong>
+                              </span>
+                            </div>
+                          </div>
 
-                      <div className="text-sm px-2 py-1 rounded bg-gray-100 text-gray-800">
-                        Condition:{" "}
-                        <span className="font-medium">
-                          {donation.condition}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-end">
-                      <motion.button
-                        className={`flex items-center gap-2 px-4 py-2 text-white rounded-md shadow-sm transition-all duration-300 bg-gradient-to-r ${donation.gradient} hover:shadow-lg transform hover:-translate-y-1`}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        Request Item <FaArrowRight size={12} />
-                      </motion.button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+                          <div className="flex justify-end">
+                            <motion.button
+                              className="flex items-center gap-2 px-4 py-2 text-white rounded-md shadow-sm transition-all duration-300 bg-gradient-to-r from-blue-600 to-blue-700 hover:shadow-lg transform hover:-translate-y-1"
+                              whileTap={{ scale: 0.98 }}
+                              onClick={() =>
+                                handleRequestItem(normalizedDonation)
+                              }
+                            >
+                              Request Item <FaArrowRight size={12} />
+                            </motion.button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  } catch (err) {
+                    console.error("Error processing donation:", err, donation);
+                    return null;
+                  }
+                })
+                .filter(Boolean)}
             </div>
           )}
 
-          {filteredDonations.length > 0 && (
+          {filteredDonations && filteredDonations?.length > 0 && (
             <div className="text-center mt-16">
               <motion.button
                 className="relative overflow-hidden px-10 py-4 border-2 border-blue-600 text-blue-600 font-semibold rounded-md hover:text-white transition-colors duration-500 group"
@@ -490,6 +710,16 @@ const FindDonations: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Donation Request Dialog */}
+      {selectedDonation && (
+        <RequestDonationDialog
+          isOpen={isRequestDialogOpen}
+          onClose={() => setIsRequestDialogOpen(false)}
+          donationId={selectedDonation.id}
+          donationTitle={selectedDonation.title}
+        />
+      )}
     </div>
   );
 };

@@ -18,7 +18,7 @@ export default function Login() {
     e.preventDefault();
     try {
       await signIn(email, password);
-      navigate("/home");
+      navigate("/dashboard");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "An error occurred");
     }

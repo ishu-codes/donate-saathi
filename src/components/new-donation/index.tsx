@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Upload, MapPin, Loader2, FileUp, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2, FileUp, X } from "lucide-react";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormItem,
@@ -20,18 +19,19 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/lib/db";
+import { supabase, logSessionInfo } from "@/lib/db";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Textarea } from "../ui/textarea";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DonationCard from "./DonationCard";
+import { useCreateDonation } from "@/hooks/db";
+import { useNavigate } from "react-router-dom";
 
 // Update the form schema to match our requirements
 const formSchema = z.object({
-  type: z.enum(["FOOD", "CLOTHES", "FUNDS", "MEDICINE"], {
+  type: z.enum(["FOOD", "CLOTHES", "FUNDS", "MEDICINE", "BOOKS", "OTHER"], {
     required_error: "Please select a donation type.",
   }),
   description: z
@@ -42,22 +42,20 @@ const formSchema = z.object({
   quantity: z.number().min(1, "Quantity is required."),
   unit: z.string().min(1, "Unit is required."),
   campaign_id: z.string().optional(),
-  media: z.array(z.any()).optional(),
-  amount: z.string(),
+  amount: z.string().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
 export default function NewDonation() {
-  const [images, setImages] = useState<File[]>([]);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { user } = useAuth();
-  // const { toast } = Toaster();
-  const [campaigns, setCampaigns] = useState([]);
-  const [ngos, setNgos] = useState([]);
   const [mediaFiles, setMediaFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<{ url: string; type: string }[]>([]);
+  const [campaigns, setCampaigns] = useState<{ id: number; name: string }[]>(
+    []
+  );
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const createDonation = useCreateDonation();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -108,100 +106,107 @@ export default function NewDonation() {
       return;
     }
 
-    setIsSubmitting(true);
     try {
-      // Upload images to Supabase storage
-      const imageUrls = await Promise.all(
-        images.map(async (image) => {
-          const fileName = `${crypto.randomUUID()}-${image.name}`;
-          const { data, error } = await supabase.storage
-            .from("donation-images")
-            .upload(fileName, image);
+      // Debug authentication
+      console.log("Current user ID:", user.id);
+      const session = await logSessionInfo();
 
-          if (error) throw error;
-          return {
-            url: data.path,
-            type: file.type.startsWith("image/") ? "image" : "video",
-          };
-        })
-      );
+      if (!session) {
+        toast.error("Session expired", {
+          description: "Your session has expired. Please login again.",
+        });
+        return;
+      }
 
-      // Create donation record
-      const { data: donation, error: donationError } = await supabase
-        .from("donation")
-        .insert([
-          {
-            type: values.type,
-            description: values.description,
-            donor_id: user.id,
-            quantity: values.quantity,
-            unit: values.unit,
-            location: values.location,
-            images: imageUrls,
-            status: "PENDING",
-          },
-        ])
-        .select()
-        .single();
+      // Convert campaign_id to number if it exists
+      const campaign_id = values.campaign_id
+        ? parseInt(values.campaign_id, 10)
+        : undefined;
 
-      if (donationError) throw donationError;
+      // Convert amount to number if it exists and type is FUNDS
+      const amount =
+        values.type === "FUNDS" && values.amount
+          ? parseFloat(values.amount)
+          : undefined;
 
-      toast("Success!", {
-        description: "Your donation has been created successfully.",
+      console.log("Submitting donation with data:", {
+        type: values.type,
+        description: values.description,
+        donor_id: user.id,
+        quantity: values.quantity,
+        unit: values.unit,
+        location: values.location,
+        campaign_id,
+        amount,
+        mediaFiles: mediaFiles.length,
       });
 
-      // Reset form
-      form.reset();
-      setImages([]);
-      setPreviewUrls([]);
+      await createDonation.mutateAsync({
+        donationData: {
+          type: values.type,
+          description: values.description,
+          donor_id: user.id,
+          quantity: values.quantity,
+          unit: values.unit,
+          location: values.location,
+          campaign_id,
+          amount,
+        },
+        mediaFiles,
+      });
 
+      toast.success("Donation created", {
+        description: "Your donation has been successfully created.",
+      });
+
+      // Clean up previews
       setPreviews((prev) => {
         prev.forEach((p) => URL.revokeObjectURL(p.url));
         return [];
       });
+
+      // Reset form and state
+      form.reset();
       setMediaFiles([]);
-    } catch (error) {
-      toast.error("Error", {
-        description: "Failed to create donation. Please try again.",
+
+      // Navigate to the donations page
+      navigate("/find-donations");
+    } catch (error: any) {
+      console.error("Error creating donation:", error);
+      // Extract more detailed error information from Supabase
+      const errorMessage = error.message || "Unknown error";
+      const details = error.details || "";
+      const hint = error.hint || "";
+      const code = error.code || "";
+
+      toast.error("Error creating donation", {
+        description: `${errorMessage}${details ? ` Details: ${details}` : ""}${
+          hint ? ` Hint: ${hint}` : ""
+        }${code ? ` (Code: ${code})` : ""}`,
       });
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
     }
   }
 
   useEffect(() => {
-    // Fetch campaigns and NGOs when component mounts
-    const fetchData = async () => {
+    // Fetch campaigns when component mounts
+    const fetchCampaigns = async () => {
       const { data: campaignsData } = await supabase
         .from("campaign")
-        .select("id, name")
-        .eq("completed", false);
-
-      const { data: ngosData } = await supabase.from("ngo").select("id, name");
+        .select("id, name");
 
       if (campaignsData) setCampaigns(campaignsData);
-      if (ngosData) setNgos(ngosData);
     };
 
-    fetchData();
+    fetchCampaigns();
   }, []);
 
   return (
-    <div
-      className="flex gap-8"
-      // initial={{ opacity: 0, y: 20 }}
-      // animate={{ opacity: 1, y: 0 }}
-      // transition={{ duration: 0.5 }}
-    >
+    <div className="flex gap-8">
       <div className="flex flex-col w-1/2">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-secondary-foreground">
             Create New Donation
           </CardTitle>
-          {/* <p className="text-muted-foreground">
-            Fill in the details below to create a new donation proposal
-          </p> */}
         </CardHeader>
         <CardContent className="space-y-6">
           <Form {...form}>
@@ -219,13 +224,18 @@ export default function NewDonation() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {["FOOD", "CLOTHES", "FUNDS", "MEDICINE"].map(
-                          (type) => (
-                            <SelectItem key={type} value={type}>
-                              {type.charAt(0) + type.slice(1).toLowerCase()}
-                            </SelectItem>
-                          )
-                        )}
+                        {[
+                          "FOOD",
+                          "CLOTHES",
+                          "FUNDS",
+                          "MEDICINE",
+                          "BOOKS",
+                          "OTHER",
+                        ].map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {type.charAt(0) + type.slice(1).toLowerCase()}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -295,13 +305,7 @@ export default function NewDonation() {
                     <FormItem>
                       <FormLabel>Amount (INR)</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
-                          {...field}
-                          onChange={(e) =>
-                            field.onChange(parseFloat(e.target.value))
-                          }
-                        />
+                        <Input type="number" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -329,10 +333,7 @@ export default function NewDonation() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Campaign</FormLabel>
-                    <Select
-                      onValueChange={(value) => field.onChange(parseInt(value))}
-                      value={field.value?.toString()}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a campaign" />
@@ -353,34 +354,6 @@ export default function NewDonation() {
                   </FormItem>
                 )}
               />
-
-              {/* <FormField
-                control={form.control}
-                name="ngo_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>NGO</FormLabel>
-                    <Select
-                      onValueChange={(value) => field.onChange(parseInt(value))}
-                      value={field.value?.toString()}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select an NGO" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {ngos.map((ngo) => (
-                          <SelectItem key={ngo.id} value={ngo.id.toString()}>
-                            {ngo.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /> */}
 
               <FormItem>
                 <FormLabel>Upload Images & Videos</FormLabel>
@@ -437,11 +410,14 @@ export default function NewDonation() {
                     </div>
                   )}
                 </div>
-                <FormMessage />
               </FormItem>
 
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? (
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={createDonation.isPending}
+              >
+                {createDonation.isPending ? (
                   <div className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Creating Donation...

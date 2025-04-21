@@ -117,7 +117,7 @@ export default function Register() {
         if (profileError) throw profileError;
       }
 
-      navigate("/home");
+      navigate("/dashboard");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {

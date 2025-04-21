@@ -1070,8 +1070,7 @@ const NewLandingPage: React.FC = () => {
       </section>
 
       {/* Team Section - Enhanced */}
-      <section className="py-24 px-6 md:px-10 lg:px-20 bg-white relative overflow-hidden">
-        {/* Background pattern */}
+      {/* <section className="py-24 px-6 md:px-10 lg:px-20 bg-white relative overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-5">
           <div className="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-green-50 to-transparent"></div>
           <div className="absolute left-0 bottom-0 w-1/2 h-1/2 bg-gradient-to-t from-gray-50 to-transparent"></div>
@@ -1331,7 +1330,7 @@ const NewLandingPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* FAQ Section */}
       <section className="py-20 px-6 md:px-10 lg:px-20 bg-gray-50">

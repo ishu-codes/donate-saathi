@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import {
-  LandingPage,
+  // LandingPage,
   Layout,
   // DashBoard,
   NewDonation,
