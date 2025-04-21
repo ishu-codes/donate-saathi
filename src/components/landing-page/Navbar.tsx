@@ -1,21 +1,24 @@
 import { useState, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
-import { Link } from "react-router-dom";
-// import Login from "../Login/Login";
-//
-// interface NavbarProps {}
+import { Link, useLocation } from "react-router-dom";
+import { FaSeedling } from "react-icons/fa";
 
 const NAVS = [
   { title: "Home", url: "/", isDropdown: false },
-  { title: "Discover NGOs", url: "discover-ngos", isDropdown: false },
-  { title: "Donation Campaigns", url: "donation-campaigns", isDropdown: false },
-  { title: "Find Donations", url: "find-donations", isDropdown: false },
-  { title: "About us", url: "about-us", isDropdown: false },
+  { title: "Discover NGOs", url: "/discover-ngos", isDropdown: false },
+  {
+    title: "Donation Campaigns",
+    url: "/donation-campaigns",
+    isDropdown: false,
+  },
+  { title: "Find Donations", url: "/find-donations", isDropdown: false },
+  { title: "About us", url: "/about-us", isDropdown: false },
 ];
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   //   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,15 +31,19 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 w-full z-50 transition-all duration-300 bg-background ${
-          isScrolled ? "shadow-md" : ""
+        className={`fixed top-0 w-full ${
+          location.pathname === "/" ? "" : "bg-background"
+        } z-50 transition-all duration-300 ${
+          isScrolled ? "bg-background shadow-md" : ""
         }`}
       >
         <div className="w-full px-8 sm:px-6 lg:px-20">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <Link to="/" className="flex-shrink-0">
+            <Link to="/" className="flex items-center gap-2">
               {/* <img className="h-8 w-auto" src="/logo.png" alt="DonateSaathi" /> */}
+
+              <FaSeedling className="text-3xl text-green-600" />
               <span className="text-3xl font-bold text-green-600">
                 DonateSaathi
               </span>
@@ -52,7 +59,11 @@ export default function Navbar() {
                   <Link
                     key={idx}
                     to={nav.url}
-                    className="flex items-center text-gray-700 hover:text-gray-900"
+                    className={`flex items-center ${
+                      location.pathname === nav.url
+                        ? "text-green-600"
+                        : "text-gray-700 hover:text-gray-900"
+                    }`}
                   >
                     {nav.title}
                     {nav.isDropdown && (

@@ -242,15 +242,17 @@ export default function Register() {
           transition={{ duration: 0.8 }}
         >
           <div className="mb-4">
-            <motion.div
-              className="flex items-center gap-3 mb-10"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-            >
-              <FaSeedling className="text-3xl text-white" />
-              <span className="text-2xl font-bold">DonateSaathi</span>
-            </motion.div>
+            <Link to="/">
+              <motion.div
+                className="flex items-center gap-3 mb-10"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+              >
+                <FaSeedling className="text-3xl text-white" />
+                <span className="text-2xl font-bold">DonateSaathi</span>
+              </motion.div>
+            </Link>
 
             <motion.h1
               className="text-5xl font-bold mb-6"

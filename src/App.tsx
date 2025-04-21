@@ -15,14 +15,54 @@ import DashBoard from "./components/dashboard";
 import AboutUs from "./components/info/AboutUs";
 import DonationCampaigns from "./components/campaigns/DonationCampaigns";
 import FindDonations from "./components/donations/FindDonations";
+import LandingLayout from "./components/landing-page/layout";
+import NewLandingPage from "./components/landing-page/LandingPage";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="about-us" element={<AboutUs />} />
       <Route
-        path="home"
+        path="/"
+        element={
+          <LandingLayout>
+            <NewLandingPage />
+          </LandingLayout>
+        }
+      />
+      <Route
+        path="discover-ngos"
+        element={
+          <LandingLayout>
+            <Discover />
+          </LandingLayout>
+        }
+      />
+      <Route
+        path="donation-campaigns"
+        element={
+          <LandingLayout>
+            <DonationCampaigns />
+          </LandingLayout>
+        }
+      />
+      <Route
+        path="find-donations"
+        element={
+          <LandingLayout>
+            <FindDonations />
+          </LandingLayout>
+        }
+      />
+      <Route
+        path="about-us"
+        element={
+          <LandingLayout>
+            <AboutUs />
+          </LandingLayout>
+        }
+      />
+      <Route
+        path="dashboard"
         element={
           <ProtectedRoute>
             <Layout>
@@ -64,9 +104,6 @@ function App() {
       <Route path="logout" element={<Logout />} />
       <Route path="register" element={<Register />} />
       <Route path="login" element={<Login />} />
-      <Route path="discover-ngos" element={<Discover />} />
-      <Route path="donation-campaigns" element={<DonationCampaigns />} />
-      <Route path="find-donations" element={<FindDonations />} />
     </Routes>
   );
 }

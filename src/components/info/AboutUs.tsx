@@ -1,14 +1,14 @@
-import React from "react";
+// import React from "react";
 import { motion } from "framer-motion";
 import {
   FaUsers,
   FaHandHoldingHeart,
   FaLightbulb,
   FaChartLine,
-  FaGraduationCap,
+  // FaGraduationCap,
   FaHandsHelping,
   FaGlobe,
-  FaHeart,
+  // FaHeart,
   FaLinkedin,
   FaGithub,
   FaEnvelope,

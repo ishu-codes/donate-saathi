@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   FaArrowRight,
@@ -69,27 +70,31 @@ const NewLandingPage: React.FC = () => {
                 giving.
               </p>
               <div className="flex flex-wrap gap-4">
-                <motion.button
-                  className="group px-8 py-3 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg flex items-center gap-2 relative overflow-hidden"
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <span className="relative z-10">Donate Now</span>
-                  <FaArrowRight className="relative z-10 transition-transform duration-300 group-hover:translate-x-1" />
-                  <span className="absolute inset-0 bg-green-700 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
-                </motion.button>
-                <motion.button
-                  className="group px-8 py-3 border-2 border-green-600 text-green-600 font-medium rounded-md hover:bg-green-50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md flex items-center gap-2"
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <span>Learn More</span>
-                  <motion.span
-                    initial={{ opacity: 0, x: -5 }}
-                    whileHover={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.2 }}
+                <Link to="/new-donation">
+                  <motion.button
+                    className="group px-8 py-3 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg flex items-center gap-2 relative overflow-hidden"
+                    whileTap={{ scale: 0.98 }}
                   >
-                    <FaArrowRight className="text-green-600" />
-                  </motion.span>
-                </motion.button>
+                    <span className="relative z-10">Donate Now</span>
+                    <FaArrowRight className="relative z-10 transition-transform duration-300 group-hover:translate-x-1" />
+                    <span className="absolute inset-0 bg-green-700 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+                  </motion.button>
+                </Link>
+                <a href="#explore">
+                  <motion.button
+                    className="group px-8 py-3 border-2 border-green-600 text-green-600 font-medium rounded-md hover:bg-green-50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md flex items-center gap-2"
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <span>Explore</span>
+                    <motion.span
+                      initial={{ opacity: 0, x: -5 }}
+                      whileHover={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <FaArrowRight className="text-green-600" />
+                    </motion.span>
+                  </motion.button>
+                </a>
               </div>
               <div className="flex items-center gap-4 mt-12">
                 <div className="flex -space-x-4">
@@ -189,7 +194,10 @@ const NewLandingPage: React.FC = () => {
       </section>
 
       {/* Help Section - Enhanced */}
-      <section className="py-24 px-6 md:px-10 lg:px-20 bg-white relative">
+      <section
+        id="explore"
+        className="py-24 px-6 md:px-10 lg:px-20 bg-white relative"
+      >
         {/* Background pattern */}
         <div className="absolute inset-0 z-0 opacity-5">
           <div className="absolute right-0 top-0 w-1/3 h-full bg-gradient-to-l from-green-200 to-transparent"></div>
@@ -395,15 +403,17 @@ const NewLandingPage: React.FC = () => {
                 ))}
               </div>
 
-              <motion.button
-                className="group px-8 py-4 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg flex items-center gap-2 relative overflow-hidden"
-                whileTap={{ scale: 0.98 }}
-                whileHover={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.1)" }}
-              >
-                <span className="relative z-10">Join Now</span>
-                <FaArrowRight className="relative z-10 transform group-hover:translate-x-1 transition-transform duration-300" />
-                <span className="absolute inset-0 bg-gradient-to-r from-green-600 to-green-700 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></span>
-              </motion.button>
+              <Link to="/register">
+                <motion.button
+                  className="group px-8 py-4 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg flex items-center gap-2 relative overflow-hidden"
+                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.1)" }}
+                >
+                  <span className="relative z-10">Join Now</span>
+                  <FaArrowRight className="relative z-10 transform group-hover:translate-x-1 transition-transform duration-300" />
+                  <span className="absolute inset-0 bg-gradient-to-r from-green-600 to-green-700 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></span>
+                </motion.button>
+              </Link>
             </motion.div>
           </div>
         </div>
@@ -545,29 +555,31 @@ const NewLandingPage: React.FC = () => {
                     </span>
                   </div>
                 </div>
-                <div className="flex justify-end">
+                <Link to="/new-donation" className="flex justify-end">
                   <motion.button
                     className={`flex items-center gap-2 px-6 py-2.5 text-white rounded-md shadow-sm transition-all duration-300 bg-gradient-to-r ${cause.gradient} hover:shadow-lg transform hover:-translate-y-1`}
                     whileTap={{ scale: 0.98 }}
                   >
                     Donate Now <FaArrowRight size={12} />
                   </motion.button>
-                </div>
+                </Link>
               </div>
             </motion.div>
           ))}
         </div>
 
         <div className="text-center mt-16">
-          <motion.button
-            className="relative overflow-hidden px-10 py-4 border-2 border-green-600 text-green-600 font-semibold rounded-md hover:text-white transition-colors duration-500 group"
-            whileHover={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.1)" }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => (window.location.href = "/donation-campaigns")}
-          >
-            <span className="relative z-10">View All Causes</span>
-            <span className="absolute inset-0 bg-green-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></span>
-          </motion.button>
+          <Link to="/donation-campaigns">
+            <motion.button
+              className="relative overflow-hidden px-10 py-4 border-2 border-green-600 text-green-600 font-semibold rounded-md hover:text-white transition-colors duration-500 group"
+              whileHover={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.1)" }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => (window.location.href = "/donation-campaigns")}
+            >
+              <span className="relative z-10">View All Causes</span>
+              <span className="absolute inset-0 bg-green-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></span>
+            </motion.button>
+          </Link>
         </div>
       </section>
 
@@ -694,14 +706,16 @@ const NewLandingPage: React.FC = () => {
               ))}
             </div>
 
-            <motion.button
-              className="group px-8 py-4 bg-white text-green-700 font-medium rounded-lg hover:bg-yellow-300 hover:text-green-800 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl flex items-center gap-2 relative overflow-hidden"
-              whileTap={{ scale: 0.98 }}
-              whileHover={{ boxShadow: "0 10px 25px rgba(0, 0, 0, 0.2)" }}
-            >
-              <span className="relative z-10">Join As Volunteer</span>
-              <FaArrowRight className="relative z-10 transform group-hover:translate-x-1 transition-transform duration-300" />
-            </motion.button>
+            <Link to="/register">
+              <motion.button
+                className="group px-8 py-4 bg-white text-green-700 font-medium rounded-lg hover:bg-yellow-300 hover:text-green-800 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl flex items-center gap-2 relative overflow-hidden"
+                whileTap={{ scale: 0.98 }}
+                whileHover={{ boxShadow: "0 10px 25px rgba(0, 0, 0, 0.2)" }}
+              >
+                <span className="relative z-10">Join As Volunteer</span>
+                <FaArrowRight className="relative z-10 transform group-hover:translate-x-1 transition-transform duration-300" />
+              </motion.button>
+            </Link>
           </motion.div>
 
           <div className="grid grid-cols-12 gap-4 relative">
@@ -1594,7 +1608,7 @@ const NewLandingPage: React.FC = () => {
             <input
               type="email"
               placeholder="Your email address"
-              className="px-6 py-4 rounded-lg w-full sm:w-auto sm:flex-1 max-w-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="px-6 py-4 rounded-lg w-full sm:w-auto sm:flex-1 max-w-md text-gray-200 ring-2 ring-white/40 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
             <button className="px-6 py-4 bg-green-600 rounded-lg hover:bg-green-700 transition-colors w-full sm:w-auto flex items-center justify-center gap-2 whitespace-nowrap">
               Subscribe Now <FaPaperPlane />

@@ -96,7 +96,7 @@ export default function Login() {
       <div className="flex-1 bg-gradient-to-b from-green-600 to-green-700 relative overflow-hidden p-8 flex flex-col justify-between text-white pt-16">
         {/* Decorative background patterns */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute h-full w-full grid grid-cols-8 grid-rows-12">
+          <div className="absolute h-full w-full grid grid-cols-8 grid-rows-12 z-40">
             {[...Array(96)].map((_, i) => (
               <div key={i} className="border-b border-r border-white/20"></div>
             ))}
@@ -112,15 +112,17 @@ export default function Login() {
           transition={{ duration: 0.8 }}
         >
           <div className="mb-4">
-            <motion.div
-              className="flex items-center gap-3 mb-10"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-            >
-              <FaSeedling className="text-3xl text-white" />
-              <span className="text-2xl font-bold">DonateSaathi</span>
-            </motion.div>
+            <Link to="/">
+              <motion.div
+                className="flex items-center gap-3 mb-10"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+              >
+                <FaSeedling className="text-3xl text-white" />
+                <span className="text-2xl font-bold">DonateSaathi</span>
+              </motion.div>
+            </Link>
 
             <motion.h1
               className="text-5xl font-bold mb-6"
