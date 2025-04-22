@@ -126,3 +126,7 @@
 .border-glow {
   animation: borderGlow 3s ease-in-out infinite;
 }
+
+* {
+  scroll-behavior: smooth;
+}

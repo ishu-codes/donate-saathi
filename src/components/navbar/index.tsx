@@ -1,15 +1,25 @@
-import { useState } from "react";
-import { Search } from "lucide-react";
-import { Button } from "@/components/ui";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+// import { Search } from "lucide-react";
+// import { Button } from "@/components/ui";
 import Notification from "./Notification";
-import Theme from "./Theme";
+// import Theme from "./Theme";
 
 export default function Navbar() {
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  // const [searchQuery, setSearchQuery] = useState<string>("");
+  const [heading, setHeading] = useState<string>("");
+  const location = useLocation();
+
+  useEffect(() => {
+    const segments = location.pathname.split("/");
+    const lastSegment = segments[segments.length - 1].replace("-", " ");
+    setHeading(lastSegment[0].toUpperCase() + lastSegment.slice(1));
+  }, [location]);
 
   return (
     <div className="w-full h-16 flex items-center justify-between px-8 py-4 bg-background border-b">
-      <form className="w-1/3 flex bg-accent rounded-full">
+      <h2 className="font-semibold text-2xl">{heading}</h2>
+      {/* <form className="w-1/3 flex bg-accent rounded-full">
         <input
           type="text"
           value={searchQuery}
@@ -24,11 +34,11 @@ export default function Navbar() {
         >
           <Search />
         </Button>
-      </form>
-      <div className="flex gap-4">
-        <Notification />
-        <Theme />
-      </div>
+      </form> */}
+      {/* <div className="flex gap-4"> */}
+      <Notification />
+      {/* <Theme /> */}
+      {/* </div> */}
     </div>
   );
 }

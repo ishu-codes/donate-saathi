@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { motion } from "framer-motion";
 import NewDonation from "./NewDonation";
@@ -60,22 +61,26 @@ export default function DashBoard() {
 
         {/* Quick action buttons */}
         <div className="flex mt-6 gap-4">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-6 py-2.5 bg-green-600 text-white rounded-lg shadow-md hover:shadow-lg flex items-center gap-2 transition-all"
-          >
-            <Gift size={18} />
-            New Donation
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-6 py-2.5 bg-white border border-green-200 text-green-600 rounded-lg shadow-sm hover:shadow flex items-center gap-2 transition-all"
-          >
-            <TrendingUp size={18} />
-            View Stats
-          </motion.button>
+          <Link to="/new-donation">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-2.5 bg-green-600 text-white rounded-lg shadow-md hover:shadow-lg flex items-center gap-2 transition-all"
+            >
+              <Gift size={18} />
+              New Donation
+            </motion.button>
+          </Link>
+          <a href="#stats">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-2.5 bg-white border border-green-200 text-green-600 rounded-lg shadow-sm hover:shadow flex items-center gap-2 transition-all"
+            >
+              <TrendingUp size={18} />
+              View Stats
+            </motion.button>
+          </a>
         </div>
       </motion.div>
 
@@ -150,7 +155,7 @@ export default function DashBoard() {
       </motion.div>
 
       {/* Main Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+      <div id="stats" className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
         <motion.div
           className="lg:col-span-2 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 border border-gray-100"
           initial={{ opacity: 0, y: 20 }}
