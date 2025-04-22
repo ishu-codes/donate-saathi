@@ -214,36 +214,6 @@ export function Discover() {
               {showFiltersMobile ? "Hide" : "Filters"}
             </button>
           </motion.div>
-
-          {/* Animated downward indicator */}
-          <motion.div
-            className="absolute bottom-5 left-1/2 transform -translate-x-1/2 flex flex-col items-center text-white"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 1 }}
-          >
-            <span className="text-sm mb-2">Explore</span>
-            <motion.div
-              animate={{ y: [0, 5, 0] }}
-              transition={{ repeat: Infinity, duration: 1.5 }}
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12 5L12 19M12 19L19 12M12 19L5 12"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </motion.div>
-          </motion.div>
         </div>
       </section>
 
