@@ -63,7 +63,7 @@ export default function Recent() {
         .toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
       donation.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      donation.message.toLowerCase().includes(searchTerm.toLowerCase())
+      donation?.message.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (

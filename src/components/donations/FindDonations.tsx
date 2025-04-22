@@ -210,8 +210,8 @@ const FindDonations: React.FC = () => {
     const matchesLocation =
       locationFilter === "" ||
       locationFilter === "All Locations" ||
-      donation.location === locationFilter ||
-      donation.user_profiles?.location === locationFilter;
+      donation?.location === locationFilter ||
+      donation?.user_profiles?.location === locationFilter;
 
     return matchesSearch && matchesCategory && matchesLocation;
   });
@@ -497,10 +497,10 @@ const FindDonations: React.FC = () => {
                             {
                               // Wrap in array for consistency in rendering
                               id:
-                                typeof donation.tag.id === "string"
-                                  ? parseInt(donation.tag.id, 10)
-                                  : donation.tag.id,
-                              name: donation.tag.name,
+                                typeof donation.tag?.id === "string"
+                                  ? parseInt(donation.tag?.id, 10)
+                                  : donation.tag?.id,
+                              name: donation.tag?.name,
                             },
                           ]
                         : donation.type

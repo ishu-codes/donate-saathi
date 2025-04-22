@@ -22,3 +22,19 @@ export interface NGOData {
   website?: string;
   tags: number[];
 }
+
+export type CampaignInterface = {
+  id: number;
+  name: string;
+  description: string;
+  target: string;
+  completed: string;
+  tag: {
+    name: string;
+  }[];
+  ngo: {
+    name: string;
+    location: string;
+  }[];
+  image: string;
+};

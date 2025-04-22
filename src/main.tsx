@@ -7,6 +7,20 @@ import { ThemeProvider } from "./components";
 import App from "./App.tsx";
 import "./index.css";
 
+// Import the PWA service worker registration
+import { registerSW } from "virtual:pwa-register";
+
+const updateSW = registerSW({
+  onNeedRefresh() {
+    if (confirm("New content available. Reload?")) {
+      updateSW(true);
+    }
+  },
+  onOfflineReady() {
+    console.log("App ready to work offline");
+  },
+});
+
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(

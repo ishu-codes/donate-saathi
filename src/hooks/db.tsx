@@ -5,6 +5,7 @@ import {
   requestDonation,
   DonationSubmission,
 } from "@/services/donation";
+import { CampaignInterface } from "@/interface";
 
 export function useNgos() {
   return useQuery({

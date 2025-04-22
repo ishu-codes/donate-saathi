@@ -20,7 +20,7 @@ const DonationCampaigns: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortOpen, setSortOpen] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<string>("Most Popular");
-  const { data: campaigns, isLoading, error } = useCampaigns();
+  const { data: campaigns } = useCampaigns();
 
   // Sample campaigns data - in a real app, this would come from an API
   // const campaigns = [
