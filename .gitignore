@@ -23,7 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-<<<<<<< HEAD
 # Test files
 tables.sql
 tast.json
@@ -33,13 +32,6 @@ tast.json
 fix-rls-policies.sql
 supabase-rls-fix.md
 supabase-storage-rpc.sql
-=======
-# Other files
-.env
-fix-rls-policies.sql
-supabase-rls-fix.md 
-supabase-storage-rpc.sql
 tables.sql
 tast.json
 
->>>>>>> 9e2f2b2 (.gitignore updated)
