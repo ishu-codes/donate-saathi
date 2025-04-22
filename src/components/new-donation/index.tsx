@@ -439,7 +439,7 @@ export default function NewDonation() {
           description={form.watch("description")}
           location={form.watch("location")}
           quantity={form.watch("quantity")}
-          amount={form.watch("amount")}
+          amount={form.watch("amount") || ""}
           unit={form.watch("unit")}
         />
       </div>

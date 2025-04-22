@@ -35,3 +35,7 @@ supabase-storage-rpc.sql
 tables.sql
 tast.json
 
+# Firebase
+.firebase
+.firebaserc
+firebase.json

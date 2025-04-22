@@ -20,6 +20,7 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
+// Core Type Definitions
 interface DonationTag {
   id: number | string;
   name: string;
@@ -38,8 +39,9 @@ interface DonationImage {
   media_type?: string;
 }
 
-interface Donation {
-  id: number;
+// Database representation of a donation from the API
+interface ApiDonationItem {
+  id: number | string;
   title: string;
   description: string;
   quantity: number;
@@ -47,11 +49,15 @@ interface Donation {
   location: string;
   created_at: string;
   status: string;
-  donation_id?: number;
-  tag?: DonationTag[];
-  donor?: DonationDonor;
   donor_id?: string | number;
-  donation_images: DonationImage[];
+  tag?:
+    | { id: number | string; name: string }
+    | { id: number | string; name: string }[];
+  donation_images: {
+    id: number | string;
+    media_url?: string;
+    media_type?: string;
+  }[];
   type?: number | string;
   user_profiles?: { location: string };
   user?: {
@@ -62,9 +68,9 @@ interface Donation {
   };
 }
 
-// Type definitions for API response
-interface ApiDonation {
-  id: number | string;
+// Normalized donation structure used in the component
+interface Donation {
+  id: number;
   title: string;
   description: string;
   quantity: number;
@@ -72,18 +78,12 @@ interface ApiDonation {
   location: string;
   created_at: string;
   status: string;
-  donation_id: number | string;
-  tag: DonationTag[] | { id: number | string; name: string }[];
-  donor:
-    | { id: number | string; email: string; created_at: string }
-    | { id: number | string; email: string; created_at: string }[];
-  donation_images: {
-    id: number | string;
-    media_url: string;
-    media_type: string;
-  }[];
-  type?: number | string;
-  user_profiles?: { location: string };
+  donation_id?: number;
+  // In our component we always handle tag as an array for consistency
+  tag: DonationTag[];
+  donor?: DonationDonor;
+  donor_id?: string | number;
+  donation_images: DonationImage[];
 }
 
 const FindDonations: React.FC = () => {
@@ -102,10 +102,75 @@ const FindDonations: React.FC = () => {
   } | null>(null);
 
   const navigate = useNavigate();
-  const { data: donations, isLoading, error: fetchError } = useFindDonations();
+  const {
+    data: apiDonations,
+    isLoading,
+    error: fetchError,
+  } = useFindDonations();
   const { user } = useAuth();
-  console.log("Raw donations data:", donations);
+  console.log("Raw donations data:", apiDonations);
   console.log("Current user:", user);
+
+  // Function to normalize donations from API
+  const normalizeDonations = (
+    apiData: ApiDonationItem[] | undefined
+  ): Donation[] => {
+    if (!apiData) return [];
+
+    return apiData.map((donation) => ({
+      id:
+        typeof donation.id === "string"
+          ? parseInt(donation.id, 10)
+          : (donation.id as number),
+      title: donation.title,
+      description: donation.description,
+      quantity: donation.quantity || 0,
+      unit: donation.unit || "",
+      location: donation.location || "",
+      created_at: donation.created_at,
+      status: donation.status || "AVAILABLE",
+      donation_id: undefined,
+      tag: donation.tag
+        ? Array.isArray(donation.tag)
+          ? donation.tag.map((t) => ({
+              id: typeof t.id === "string" ? parseInt(t.id, 10) : t.id,
+              name: t.name,
+            }))
+          : [
+              {
+                id:
+                  typeof donation.tag.id === "string"
+                    ? parseInt(donation.tag.id, 10)
+                    : donation.tag.id,
+                name: donation.tag.name,
+              },
+            ]
+        : donation.type !== undefined
+        ? [
+            {
+              id:
+                typeof donation.type === "string"
+                  ? parseInt(donation.type, 10)
+                  : donation.type,
+              name: getTagNameById(
+                typeof donation.type === "string"
+                  ? parseInt(donation.type, 10)
+                  : (donation.type as number)
+              ),
+            },
+          ]
+        : [],
+      donor_id: donation.donor_id,
+      donation_images: donation.donation_images.map((img) => ({
+        id: img.id,
+        media_url: img.media_url,
+        media_type: img.media_type,
+      })),
+    }));
+  };
+
+  // Normalize donations for use in the component
+  const donations = normalizeDonations(apiDonations);
 
   const handleRequestItem = (donation: Donation) => {
     if (!user) {
@@ -144,19 +209,13 @@ const FindDonations: React.FC = () => {
 
   // Extract unique categories from donations
   const categories = ["All"];
-  if (donations) {
+  if (donations.length > 0) {
     const uniqueCategories = new Set<string>();
     donations.forEach((donation) => {
-      // Handle tag as a direct object, not an array
-      if (donation.tag?.name) {
-        uniqueCategories.add(donation.tag.name);
-      } else if (donation.type) {
-        // Handle if type is directly available
-        const typeName =
-          typeof donation.type === "number"
-            ? getTagNameById(donation.type)
-            : donation.type;
-        if (typeName) uniqueCategories.add(typeName);
+      if (donation.tag.length > 0) {
+        donation.tag.forEach((tag) => {
+          if (tag.name) uniqueCategories.add(tag.name);
+        });
       }
     });
     categories.push(...Array.from(uniqueCategories));
@@ -177,41 +236,33 @@ const FindDonations: React.FC = () => {
 
   // Extract unique locations from donations
   const locations = ["All Locations"];
-  if (donations) {
+  if (donations.length > 0) {
     const uniqueLocations = new Set<string>();
     donations.forEach((donation) => {
-      // Handle both structures
       if (donation.location) {
         uniqueLocations.add(donation.location);
-      } else if (donation.user_profiles?.location) {
-        uniqueLocations.add(donation.user_profiles.location);
       }
     });
     locations.push(...Array.from(uniqueLocations));
   }
 
   // Filter donations based on search, category, and location
-  const filteredDonations = donations?.filter((donation) => {
+  const filteredDonations = donations.filter((donation) => {
     const matchesSearch = searchQuery
       ? donation.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         donation.description?.toLowerCase().includes(searchQuery.toLowerCase())
       : true;
 
-    // Handle tag as a direct object, not an array
+    // Check if donation matches selected category
     const matchesCategory =
       activeFilter === "All" ||
-      donation.tag?.name === activeFilter ||
-      (donation.type &&
-        (typeof donation.type === "number"
-          ? getTagNameById(donation.type) === activeFilter
-          : donation.type === activeFilter));
+      donation.tag.some((tag) => tag.name === activeFilter);
 
-    // Handle different location data structures
+    // Check if donation matches selected location
     const matchesLocation =
       locationFilter === "" ||
       locationFilter === "All Locations" ||
-      donation?.location === locationFilter ||
-      donation?.user_profiles?.location === locationFilter;
+      donation.location === locationFilter;
 
     return matchesSearch && matchesCategory && matchesLocation;
   });
@@ -219,32 +270,6 @@ const FindDonations: React.FC = () => {
   // When rendering donation images
   const getImageUrl = (image: DonationImage) => {
     return image.url || image.media_url || "";
-  };
-
-  // Helper function to normalize donor data
-  const normalizeDonor = (donorData: ApiDonation["donor"]): DonationDonor => {
-    // If donor is an array, take the first item
-    if (Array.isArray(donorData)) {
-      return {
-        id: donorData[0]?.id
-          ? typeof donorData[0].id === "string"
-            ? parseInt(donorData[0].id, 10)
-            : donorData[0].id
-          : 0,
-        email: donorData[0]?.email || "",
-        created_at: donorData[0]?.created_at || "",
-      };
-    }
-    // If donor is already an object
-    return {
-      id: donorData?.id
-        ? typeof donorData.id === "string"
-          ? parseInt(donorData.id, 10)
-          : donorData.id
-        : 0,
-      email: donorData?.email || "",
-      created_at: donorData?.created_at || "",
-    };
   };
 
   return (
@@ -470,172 +495,86 @@ const FindDonations: React.FC = () => {
                     return null;
                   }
 
-                  // Try to normalize the donation data regardless of structure
-                  try {
-                    const normalizedDonation: Donation = {
-                      id:
-                        typeof donation.id === "string"
-                          ? parseInt(donation.id, 10)
-                          : donation.id,
-                      title: donation.title,
-                      description: donation.description,
-                      quantity: donation.quantity || 0,
-                      unit: donation.unit || "",
-                      location:
-                        donation.location ||
-                        donation.user_profiles?.location ||
-                        "Unknown",
-                      created_at: donation.created_at,
-                      status: donation.status || "AVAILABLE",
-                      donation_id: donation.donation_id
-                        ? typeof donation.donation_id === "string"
-                          ? parseInt(donation.donation_id, 10)
-                          : donation.donation_id
-                        : undefined,
-                      tag: donation.tag
-                        ? [
-                            {
-                              // Wrap in array for consistency in rendering
-                              id:
-                                typeof donation.tag?.id === "string"
-                                  ? parseInt(donation.tag?.id, 10)
-                                  : donation.tag?.id,
-                              name: donation.tag?.name,
-                            },
-                          ]
-                        : donation.type
-                        ? [
-                            {
-                              id:
-                                typeof donation.type === "string"
-                                  ? parseInt(donation.type, 10)
-                                  : donation.type,
-                              name: getTagNameById(
-                                typeof donation.type === "string"
-                                  ? parseInt(donation.type, 10)
-                                  : donation.type
-                              ),
-                            },
-                          ]
-                        : [],
-                      donor: donation.donor
-                        ? normalizeDonor(donation.donor)
-                        : {
-                            id: donation.donor_id || 0,
-                            email:
-                              donation.user?.email ||
-                              donation.user?.username ||
-                              "Anonymous",
-                            created_at:
-                              donation.created_at || new Date().toISOString(),
-                          },
-                      donation_images:
-                        donation.donation_images &&
-                        donation.donation_images.length
-                          ? donation.donation_images.map(
-                              (image: DonationImage) => ({
-                                id:
-                                  typeof image.id === "string"
-                                    ? parseInt(image.id, 10)
-                                    : image.id,
-                                media_url: image.media_url,
-                                media_type: image.media_type || "image",
-                              })
-                            )
-                          : [],
-                    };
-
-                    return (
-                      <motion.div
-                        key={normalizedDonation.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5 }}
-                        className="group bg-white rounded-xl overflow-hidden border border-gray-100 shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2"
-                      >
-                        <div className="relative h-56 overflow-hidden">
-                          {normalizedDonation.donation_images &&
-                          normalizedDonation.donation_images.length > 0 ? (
-                            <img
-                              src={getImageUrl(
-                                normalizedDonation.donation_images[0]
-                              )}
-                              alt={normalizedDonation.title}
-                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                              <span className="text-gray-400">
-                                No image available
-                              </span>
-                            </div>
-                          )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                          <div className="absolute top-4 left-4 z-10">
-                            <span className="px-4 py-1.5 rounded-full text-white text-xs font-semibold uppercase tracking-wider bg-gradient-to-r from-blue-600 to-blue-700">
-                              {normalizedDonation.tag &&
-                              normalizedDonation.tag.length > 0
-                                ? normalizedDonation.tag[0].name
-                                : "Miscellaneous"}
+                  return (
+                    <motion.div
+                      key={donation.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5 }}
+                      className="group bg-white rounded-xl overflow-hidden border border-gray-100 shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2"
+                    >
+                      <div className="relative h-56 overflow-hidden">
+                        {donation.donation_images &&
+                        donation.donation_images.length > 0 ? (
+                          <img
+                            src={getImageUrl(donation.donation_images[0])}
+                            alt={donation.title}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                            <span className="text-gray-400">
+                              No image available
                             </span>
                           </div>
-                          <div className="absolute bottom-4 left-4 right-4 transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 flex justify-between items-center z-10">
-                            <span className="text-white text-sm bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1.5">
-                              <FaMapMarkerAlt size={12} />{" "}
-                              {normalizedDonation.location || "No location"}
-                            </span>
-                            <span className="text-white text-sm bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1.5">
-                              <FaCalendarAlt size={12} /> Posted{" "}
-                              {formatDate(normalizedDonation.created_at)}
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div className="absolute top-4 left-4 z-10">
+                          <span className="px-4 py-1.5 rounded-full text-white text-xs font-semibold uppercase tracking-wider bg-gradient-to-r from-blue-600 to-blue-700">
+                            {donation.tag && donation.tag.length > 0
+                              ? donation.tag[0].name
+                              : "Miscellaneous"}
+                          </span>
+                        </div>
+                        <div className="absolute bottom-4 left-4 right-4 transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 flex justify-between items-center z-10">
+                          <span className="text-white text-sm bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1.5">
+                            <FaMapMarkerAlt size={12} />{" "}
+                            {donation.location || "No location"}
+                          </span>
+                          <span className="text-white text-sm bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1.5">
+                            <FaCalendarAlt size={12} /> Posted{" "}
+                            {formatDate(donation.created_at)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="p-6">
+                        <h3 className="text-xl font-semibold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                          {donation.title}
+                        </h3>
+                        <p className="text-sm text-gray-500 mb-2">
+                          Offered by{" "}
+                          {donation.donor?.email?.split("@")[0] || "Anonymous"}
+                        </p>
+                        <p className="text-gray-600 mb-6 line-clamp-2 group-hover:line-clamp-none transition-all duration-500">
+                          {donation.description}
+                        </p>
+
+                        <div className="flex items-center justify-between mb-6">
+                          <div className="flex items-center gap-1.5 text-sm text-gray-600">
+                            <FaBoxOpen className="text-blue-500" />
+                            <span>
+                              Quantity:{" "}
+                              <strong>
+                                {donation.quantity} {donation.unit}
+                              </strong>
                             </span>
                           </div>
                         </div>
 
-                        <div className="p-6">
-                          <h3 className="text-xl font-semibold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors duration-300">
-                            {normalizedDonation.title}
-                          </h3>
-                          <p className="text-sm text-gray-500 mb-2">
-                            Offered by{" "}
-                            {normalizedDonation.donor?.email?.split("@")[0] ||
-                              "Anonymous"}
-                          </p>
-                          <p className="text-gray-600 mb-6 line-clamp-2 group-hover:line-clamp-none transition-all duration-500">
-                            {normalizedDonation.description}
-                          </p>
-
-                          <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center gap-1.5 text-sm text-gray-600">
-                              <FaBoxOpen className="text-blue-500" />
-                              <span>
-                                Quantity:{" "}
-                                <strong>
-                                  {normalizedDonation.quantity}{" "}
-                                  {normalizedDonation.unit}
-                                </strong>
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="flex justify-end">
-                            <motion.button
-                              className="flex items-center gap-2 px-4 py-2 text-white rounded-md shadow-sm transition-all duration-300 bg-gradient-to-r from-blue-600 to-blue-700 hover:shadow-lg transform hover:-translate-y-1"
-                              whileTap={{ scale: 0.98 }}
-                              onClick={() =>
-                                handleRequestItem(normalizedDonation)
-                              }
-                            >
-                              Request Item <FaArrowRight size={12} />
-                            </motion.button>
-                          </div>
+                        <div className="flex justify-end">
+                          <motion.button
+                            className="flex items-center gap-2 px-4 py-2 text-white rounded-md shadow-sm transition-all duration-300 bg-gradient-to-r from-blue-600 to-blue-700 hover:shadow-lg transform hover:-translate-y-1"
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => handleRequestItem(donation)}
+                          >
+                            Request Item <FaArrowRight size={12} />
+                          </motion.button>
                         </div>
-                      </motion.div>
-                    );
-                  } catch (err) {
-                    console.error("Error processing donation:", err, donation);
-                    return null;
-                  }
+                      </div>
+                    </motion.div>
+                  );
                 })
                 .filter(Boolean)}
             </div>

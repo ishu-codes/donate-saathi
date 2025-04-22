@@ -26,7 +26,6 @@ import {
   Gift,
   HandPlatter,
   Mail,
-  MapPin,
   Pencil,
   Phone,
   Search,
