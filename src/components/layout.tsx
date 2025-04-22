@@ -4,6 +4,7 @@ import Sidebar from "./sidebar";
 import { Toaster } from "./ui/sonner";
 import { Menu } from "lucide-react";
 import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
 
 export default function Layout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -20,7 +21,9 @@ export default function Layout({ children }: { children: ReactNode }) {
         >
           <Menu />
         </Button>
-        <span className="font-bold text-xl text-green-600">DonateSaathi</span>
+        <Link to="/">
+          <span className="font-bold text-xl text-green-600">DonateSaathi</span>
+        </Link>
       </div>
 
       {/* Sidebar - hidden on mobile by default unless toggled */}
