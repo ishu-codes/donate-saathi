@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 import { FaSeedling } from "react-icons/fa";
+import { useAuth } from "@/context/AuthContext";
 
 const NAVS = [
   { title: "Home", url: "/", isDropdown: false },
@@ -20,6 +21,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   //   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -76,12 +78,21 @@ export default function Navbar() {
               {/* <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
                 Donate Money
               </button> */}
-              <Link
-                to={"/login"}
-                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
-              >
-                Login
-              </Link>
+              {user ? (
+                <Link
+                  to="/dashboard"
+                  className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+                >
+                  Go to Dashboard
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+                >
+                  Login
+                </Link>
+              )}
             </div>
           </div>
         </div>
