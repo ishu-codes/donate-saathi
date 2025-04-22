@@ -29,3 +29,100 @@
     transform: scale(1);
   }
 }
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes borderGlow {
+  0% {
+    box-shadow: 0 0 5px rgba(74, 222, 128, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(74, 222, 128, 0.2);
+  }
+}
+
+/* Color variables for charts and data visualization */
+:root {
+  --chart-1: #22c55e; /* Green 500 */
+  --chart-2: #3b82f6; /* Blue 500 */
+  --chart-3: #ec4899; /* Pink 500 */
+  --chart-4: #f59e0b; /* Amber 500 */
+  --chart-5: #8b5cf6; /* Violet 500 */
+
+  --color-food: #22c55e;
+  --color-clothing: #3b82f6;
+  --color-study: #f59e0b;
+  --color-other: #8b5cf6;
+
+  --color-desktop: #22c55e;
+  --color-mobile: #3b82f6;
+
+  --gradient-green: linear-gradient(135deg, #22c55e, #16a34a);
+  --gradient-success: linear-gradient(135deg, #22c55e, #16a34a);
+  --gradient-info: linear-gradient(135deg, #3b82f6, #2563eb);
+  --gradient-warning: linear-gradient(135deg, #f59e0b, #d97706);
+  --gradient-danger: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+/* Shimmer effect for loading states */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.5),
+    rgba(255, 255, 255, 0)
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Gradient background animation */
+.gradient-animate {
+  background: linear-gradient(270deg, #22c55e, #16a34a, #22c55e);
+  background-size: 600% 600%;
+  animation: gradientFlow 8s ease infinite;
+}
+
+/* Floating elements */
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Glowing border effect */
+.border-glow {
+  animation: borderGlow 3s ease-in-out infinite;
+}
