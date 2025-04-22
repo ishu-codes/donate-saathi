@@ -136,10 +136,10 @@ interface DonationRequestRecord {
 
 export function useNgos() {
   return useQuery<NGORecord[], Error>({
-    queryKey: ["ngos"],
+    queryKey: ["ngo"],
     queryFn: async () => {
       try {
-        const { data, error } = await supabase.from("ngos").select("*");
+        const { data, error } = await supabase.from("ngo").select("*");
         if (error) throw error;
         return data as NGORecord[];
       } catch (err) {

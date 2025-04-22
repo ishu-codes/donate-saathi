@@ -261,9 +261,9 @@ export function Discover() {
             >
               All Categories
             </button>
-            {categories?.map((category) => (
+            {categories?.map((category, idx) => (
               <motion.button
-                key={category}
+                key={idx}
                 onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                   selectedCategory === category
@@ -273,7 +273,7 @@ export function Discover() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                {category.replace("-", " ").toUpperCase()}
+                {category?.replace("-", " ").toUpperCase()}
               </motion.button>
             ))}
           </div>
@@ -398,10 +398,10 @@ export function Discover() {
                         Partner
                       </span>
 
-                      {ngo.tags.length > 0 && (
+                      {ngo?.tags?.length > 0 && (
                         <span className="inline-flex items-center px-3 py-1 rounded-full bg-yellow-400/90 text-white text-xs font-medium">
                           <FaCertificate className="mr-1 h-3 w-3" />{" "}
-                          {ngo.tags[0].replace("-", " ")}
+                          {ngo.tags[0]?.replace("-", " ")}
                         </span>
                       )}
                     </div>
@@ -452,7 +452,7 @@ export function Discover() {
 
                     {/* Category Tags with enhanced styling */}
                     <div className="flex flex-wrap gap-2 mb-6">
-                      {ngo.tags.map((tag) => (
+                      {ngo?.tags?.map((tag) => (
                         <span
                           key={tag}
                           className="px-3 py-1 bg-green-50 text-green-600 rounded-full text-xs font-medium border border-green-100 hover:bg-green-100 transition-colors cursor-pointer"

@@ -201,16 +201,19 @@ export default function NewDonation() {
   }, []);
 
   return (
-    <div className="flex gap-8">
-      <div className="flex flex-col w-1/2">
+    <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+      <div className="flex flex-col w-full lg:w-1/2">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-secondary-foreground">
+          <CardTitle className="text-xl sm:text-2xl font-bold text-secondary-foreground">
             Create New Donation
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-3 sm:space-y-4"
+            >
               <FormField
                 control={form.control}
                 name="type"
@@ -262,7 +265,7 @@ export default function NewDonation() {
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <FormField
                   control={form.control}
                   name="quantity"
@@ -357,7 +360,7 @@ export default function NewDonation() {
 
               <FormItem>
                 <FormLabel>Upload Images & Videos</FormLabel>
-                <div className="grid gap-4">
+                <div className="grid gap-3 sm:gap-4">
                   <div className="flex items-center gap-4">
                     <Button
                       type="button"
@@ -381,19 +384,19 @@ export default function NewDonation() {
                   </div>
 
                   {previews.length > 0 && (
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
                       {previews.map((preview, index) => (
                         <div key={index} className="relative group">
                           {preview.type === "image" ? (
                             <img
                               src={preview.url}
                               alt={`Preview ${index + 1}`}
-                              className="w-full h-24 object-cover rounded-md"
+                              className="w-full h-20 sm:h-24 object-cover rounded-md"
                             />
                           ) : (
                             <video
                               src={preview.url}
-                              className="w-full h-24 object-cover rounded-md"
+                              className="w-full h-20 sm:h-24 object-cover rounded-md"
                               controls
                             />
                           )}
@@ -414,7 +417,7 @@ export default function NewDonation() {
 
               <Button
                 type="submit"
-                className="w-full bg-green-600 hover:bg-green-700"
+                className="w-full bg-green-600 hover:bg-green-700 mt-4"
                 disabled={createDonation.isPending}
               >
                 {createDonation.isPending ? (
@@ -430,7 +433,7 @@ export default function NewDonation() {
           </Form>
         </CardContent>
       </div>
-      <div className="flex-1 px-8">
+      <div className="flex-1 px-2 sm:px-4 lg:px-8 mt-4 lg:mt-0">
         <DonationCard
           mediaPreviews={previews}
           donationType={form.watch("type")}

@@ -5,10 +5,16 @@ import {
   LayoutDashboard,
   LogOut,
   Settings,
+  X,
 } from "lucide-react";
 import { FaSeedling } from "react-icons/fa";
+import { Button } from "../ui/button";
 
-export default function Sidebar() {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+export default function Sidebar({ onClose }: SidebarProps) {
   const location = useLocation();
 
   const NAVS = [
@@ -22,17 +28,26 @@ export default function Sidebar() {
     { title: "Settings", icon: <Settings />, url: "/settings" },
   ];
   return (
-    <div className="w-72 h-full flex flex-col py-6 sticky top-0 border-r">
+    <div className="w-72 h-full flex flex-col py-6 sticky top-0 border-r bg-background z-10">
       <div className="h-full flex flex-col gap-10">
-        <Link className="flex gap-2 items-center px-4" to="/">
-          {/* <picture className="h-4">
-            <img src="/icon.png" alt="Logo" className="w-16" />
-          </picture> */}
-          <FaSeedling className="text-3xl text-green-600" />
-          <span className="text-2xl font-bold text-green-600">
-            DonateSaathi
-          </span>
-        </Link>
+        <div className="flex gap-2 items-center px-4 justify-between">
+          <Link className="flex gap-2 items-center" to="/">
+            <FaSeedling className="text-3xl text-green-600" />
+            <span className="text-2xl font-bold text-green-600">
+              DonateSaathi
+            </span>
+          </Link>
+          {onClose && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="md:hidden"
+            >
+              <X size={20} />
+            </Button>
+          )}
+        </div>
 
         <div className="flex flex-col gap-2">
           {NAVS.map((nav, idx) => (
@@ -44,6 +59,7 @@ export default function Sidebar() {
               }`}
               to={nav.url}
               key={idx}
+              onClick={onClose}
             >
               {nav.icon}
               {nav.title}
@@ -55,6 +71,7 @@ export default function Sidebar() {
       <Link
         className="flex gap-2 px-4 py-3 hover:bg-accent rounded-xl text-muted-foreground"
         to={"/logout"}
+        onClick={onClose}
       >
         <LogOut />
         Logout

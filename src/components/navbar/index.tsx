@@ -17,8 +17,8 @@ export default function Navbar() {
   }, [location]);
 
   return (
-    <div className="w-full h-16 flex items-center justify-between px-8 py-4 bg-background border-b">
-      <h2 className="font-semibold text-2xl">{heading}</h2>
+    <div className="w-full h-16 flex items-center justify-between px-4 sm:px-8 py-4 bg-background border-b">
+      <h2 className="font-semibold text-xl md:text-2xl">{heading}</h2>
       {/* <form className="w-1/3 flex bg-accent rounded-full">
         <input
           type="text"
@@ -36,7 +36,9 @@ export default function Navbar() {
         </Button>
       </form> */}
       {/* <div className="flex gap-4"> */}
-      <Notification />
+      <div className="flex items-center">
+        <Notification />
+      </div>
       {/* <Theme /> */}
       {/* </div> */}
     </div>

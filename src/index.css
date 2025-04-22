@@ -127,3 +127,75 @@ html {
 button {
   cursor: pointer;
 }
+
+/* Responsive helpers */
+@layer utilities {
+  /* Container for responsive content */
+  .container-responsive {
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  @media (min-width: 640px) {
+    .container-responsive {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container-responsive {
+      padding-left: 2rem;
+      padding-right: 2rem;
+      max-width: 1200px;
+    }
+  }
+
+  /* Flex direction helpers */
+  .flex-col-mobile {
+    flex-direction: column;
+  }
+
+  @media (min-width: 768px) {
+    .flex-col-mobile {
+      flex-direction: row;
+    }
+  }
+
+  /* Gap spacing for responsive layouts */
+  .gap-responsive {
+    gap: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .gap-responsive {
+      gap: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .gap-responsive {
+      gap: 2rem;
+    }
+  }
+
+  /* Responsive text sizes */
+  .text-responsive {
+    font-size: 0.875rem;
+  }
+
+  @media (min-width: 640px) {
+    .text-responsive {
+      font-size: 1rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .text-responsive {
+      font-size: 1.125rem;
+    }
+  }
+}

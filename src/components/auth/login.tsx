@@ -25,7 +25,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex overflow-hidden relative">
+    <div className="min-h-screen flex flex-col md:flex-row overflow-hidden relative">
       {/* Background decorative elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-green-100 opacity-50 blur-3xl"></div>
@@ -92,8 +92,8 @@ export default function Login() {
         ></motion.div>
       </div>
 
-      {/* Left Section */}
-      <div className="flex-1 bg-gradient-to-b from-green-600 to-green-700 relative overflow-hidden p-8 flex flex-col justify-between text-white pt-16">
+      {/* Left Section - hidden on small screens, visible from medium screens up */}
+      <div className="hidden md:flex flex-1 bg-gradient-to-b from-green-600 to-green-700 relative overflow-hidden p-8 flex-col justify-between text-white pt-16">
         {/* Decorative background patterns */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute h-full w-full grid grid-cols-8 grid-rows-12 z-40">
@@ -125,7 +125,7 @@ export default function Login() {
             </Link>
 
             <motion.h1
-              className="text-5xl font-bold mb-6"
+              className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
@@ -133,7 +133,7 @@ export default function Login() {
               Welcome Back! 👋
             </motion.h1>
             <motion.p
-              className="text-xl text-green-100"
+              className="text-lg md:text-xl text-green-100"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
@@ -149,17 +149,17 @@ export default function Login() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.6 }}
           >
-            <div className="flex gap-6 mb-8">
+            <div className="flex gap-4 md:gap-6 mb-8">
               <div className="flex flex-col">
-                <span className="text-3xl font-bold">2,500+</span>
+                <span className="text-2xl md:text-3xl font-bold">2,500+</span>
                 <span className="text-green-200 text-sm">Active Donors</span>
               </div>
               <div className="flex flex-col">
-                <span className="text-3xl font-bold">120+</span>
+                <span className="text-2xl md:text-3xl font-bold">120+</span>
                 <span className="text-green-200 text-sm">Verified NGOs</span>
               </div>
               <div className="flex flex-col">
-                <span className="text-3xl font-bold">₹10M+</span>
+                <span className="text-2xl md:text-3xl font-bold">₹10M+</span>
                 <span className="text-green-200 text-sm">Donations Made</span>
               </div>
             </div>
@@ -176,8 +176,16 @@ export default function Login() {
         </motion.div>
       </div>
 
+      {/* Mobile logo - only visible on small screens */}
+      <div className="md:hidden flex items-center justify-center py-8 bg-green-600">
+        <Link to="/" className="flex items-center gap-2">
+          <FaSeedling className="text-2xl text-white" />
+          <span className="text-xl font-bold text-white">DonateSaathi</span>
+        </Link>
+      </div>
+
       {/* Right Section */}
-      <div className="flex-1 p-8 flex items-center justify-center relative">
+      <div className="flex-1 p-4 sm:p-8 flex items-center justify-center relative">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -187,7 +195,7 @@ export default function Login() {
           <Card className="w-full max-w-md border border-gray-100 shadow-xl bg-white/80 backdrop-blur-sm">
             <CardHeader className="pb-2">
               <motion.h3
-                className="text-2xl font-bold text-gray-800"
+                className="text-xl sm:text-2xl font-bold text-gray-800"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
@@ -195,7 +203,7 @@ export default function Login() {
                 Sign in to your account
               </motion.h3>
               <motion.p
-                className="text-gray-500 mt-2"
+                className="text-gray-500 mt-2 text-sm sm:text-base"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.7 }}
@@ -209,8 +217,8 @@ export default function Login() {
                 </Link>
               </motion.p>
             </CardHeader>
-            <CardContent className="space-y-6 pt-6">
-              <form onSubmit={handleSubmit} className="space-y-5">
+            <CardContent className="space-y-4 sm:space-y-6 pt-4 sm:pt-6">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
                 {error && (
                   <motion.div
                     className="bg-red-50 text-red-500 text-sm p-3 rounded-lg border border-red-100"

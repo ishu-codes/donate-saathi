@@ -155,7 +155,7 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex overflow-hidden relative">
+    <div className="min-h-screen flex flex-col md:flex-row overflow-hidden relative">
       {/* Background decorative elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-green-100 opacity-50 blur-3xl"></div>
@@ -222,8 +222,8 @@ export default function Register() {
         ></motion.div>
       </div>
 
-      {/* Left Section */}
-      <div className="flex-1 bg-gradient-to-b from-green-600 to-green-700 relative overflow-hidden p-8 flex flex-col justify-between text-white pt-16">
+      {/* Left Section - hidden on mobile */}
+      <div className="hidden md:flex flex-1 bg-gradient-to-b from-green-600 to-green-700 relative overflow-hidden p-8 flex-col justify-between text-white pt-16">
         {/* Decorative background patterns */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute h-full w-full grid grid-cols-8 grid-rows-12">
@@ -255,48 +255,42 @@ export default function Register() {
             </Link>
 
             <motion.h1
-              className="text-5xl font-bold mb-6"
+              className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
             >
-              Hello Saathi! 👋
+              Join DonateSaathi! 🌱
             </motion.h1>
             <motion.p
-              className="text-xl text-green-100"
+              className="text-lg md:text-xl text-green-100"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
             >
-              DonateSaathi connects those in need with people who have excess
-              resources. Make a difference through seamless giving and sharing!
+              Begin your journey of making a difference through seamless giving
+              and sharing.
             </motion.p>
           </div>
 
           <motion.div
-            className="mt-auto bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20"
+            className="mt-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.6 }}
           >
-            <h3 className="text-xl font-semibold mb-3">Join Our Community</h3>
-            <p className="text-green-50 mb-5">
-              Whether you're looking to donate, volunteer, or represent an NGO,
-              DonateSaathi provides a platform to make meaningful connections
-              and impact.
-            </p>
-            <div className="flex gap-2">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-300 rounded-full"></div>
-                <span className="text-sm text-green-200">Register</span>
+            <div className="flex gap-4 md:gap-6 mb-8">
+              <div className="flex flex-col">
+                <span className="text-2xl md:text-3xl font-bold">2,500+</span>
+                <span className="text-green-200 text-sm">Active Donors</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-white/30 rounded-full"></div>
-                <span className="text-sm text-green-200">Connect</span>
+              <div className="flex flex-col">
+                <span className="text-2xl md:text-3xl font-bold">120+</span>
+                <span className="text-green-200 text-sm">Verified NGOs</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-white/30 rounded-full"></div>
-                <span className="text-sm text-green-200">Contribute</span>
+              <div className="flex flex-col">
+                <span className="text-2xl md:text-3xl font-bold">₹10M+</span>
+                <span className="text-green-200 text-sm">Donations Made</span>
               </div>
             </div>
           </motion.div>
@@ -312,288 +306,37 @@ export default function Register() {
         </motion.div>
       </div>
 
+      {/* Mobile logo - only visible on small screens */}
+      <div className="md:hidden flex items-center justify-center py-6 bg-green-600">
+        <Link to="/" className="flex items-center gap-2">
+          <FaSeedling className="text-2xl text-white" />
+          <span className="text-xl font-bold text-white">DonateSaathi</span>
+        </Link>
+      </div>
+
       {/* Right Section */}
-      <div className="flex-1 p-4 md:p-8 flex items-center justify-center relative overflow-y-auto max-h-screen">
+      <div className="flex-1 p-4 sm:p-6 md:p-8 flex items-center justify-center relative overflow-y-auto max-h-screen">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="w-full max-w-md relative z-10"
+          className="w-full max-w-md relative z-10 py-4"
         >
-          <Card className="w-full max-w-md border border-gray-100 shadow-xl bg-white/80 backdrop-blur-sm">
+          <Card className="w-full max-w-md border border-gray-100 shadow-xl bg-white/80 backdrop-blur-sm mb-8">
             <CardHeader className="pb-2">
               <motion.h3
-                className="text-2xl font-bold text-gray-800"
+                className="text-xl sm:text-2xl font-bold text-gray-800"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
               >
-                Create an account
+                Create your account
               </motion.h3>
-              <motion.div
+              <motion.p
+                className="text-gray-500 mt-2 text-sm sm:text-base"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-                className="mt-2"
-              >
-                <Tabs
-                  defaultValue="donor"
-                  className="w-full"
-                  value={userType}
-                  onValueChange={(value) =>
-                    setUserType(value as "donor" | "NGO")
-                  }
-                >
-                  <TabsList className="grid w-full grid-cols-2 bg-green-50">
-                    <TabsTrigger
-                      value="donor"
-                      className="data-[state=active]:bg-green-600 data-[state=active]:text-white"
-                    >
-                      Register as Donor
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="NGO"
-                      className="data-[state=active]:bg-green-600 data-[state=active]:text-white"
-                    >
-                      Register as NGO
-                    </TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="donor">
-                    <p className="text-gray-500 mt-2">
-                      Join as a donor to start making a difference today!
-                    </p>
-                  </TabsContent>
-
-                  <TabsContent value="NGO">
-                    <p className="text-gray-500 mt-2">
-                      Register your NGO to connect with donors and volunteers.
-                    </p>
-                  </TabsContent>
-                </Tabs>
-              </motion.div>
-            </CardHeader>
-
-            <CardContent className="space-y-5 pt-6">
-              <form onSubmit={handleSubmit} className="space-y-5">
-                {error && (
-                  <motion.div
-                    className="bg-red-50 text-red-500 text-sm p-3 rounded-lg border border-red-100"
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                  >
-                    {error}
-                  </motion.div>
-                )}
-
-                {/* Common fields */}
-                {[
-                  {
-                    name: "username",
-                    type: "text",
-                    placeholder: "Username",
-                    value: username,
-                    onChange: setUsername,
-                    label: "Username",
-                  },
-                  {
-                    name: "email",
-                    type: "email",
-                    placeholder: "Email address",
-                    value: email,
-                    onChange: setEmail,
-                    label: "Email",
-                  },
-                  {
-                    name: "password",
-                    type: "password",
-                    placeholder: "Password",
-                    value: password,
-                    onChange: setPassword,
-                    label: "Password",
-                  },
-                ].map((field, index) => (
-                  <motion.div
-                    className="space-y-1"
-                    key={field.name}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.6 + index * 0.1 }}
-                  >
-                    <label className="text-sm font-medium text-gray-700 mb-1 block">
-                      {field.label}
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        {getIcon(field.name)}
-                      </div>
-                      <Input
-                        type={field.type}
-                        placeholder={field.placeholder}
-                        value={field.value}
-                        onChange={(e) => field.onChange(e.target.value)}
-                        required
-                        className="pl-10 bg-white border-gray-200 focus:border-green-500 focus:ring-green-500"
-                      />
-                    </div>
-                  </motion.div>
-                ))}
-
-                {/* NGO specific fields */}
-                {userType === "NGO" && (
-                  <motion.div
-                    className="space-y-5"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.9 }}
-                  >
-                    <div className="h-px bg-gray-200 my-2"></div>
-
-                    <div className="text-sm font-medium text-gray-700">
-                      NGO Details
-                    </div>
-
-                    {[
-                      {
-                        name: "name",
-                        type: "text",
-                        placeholder: "NGO Name",
-                        label: "NGO Name",
-                      },
-                      {
-                        name: "description",
-                        type: "text",
-                        placeholder: "Description",
-                        label: "Description",
-                      },
-                      {
-                        name: "location",
-                        type: "text",
-                        placeholder: "Location",
-                        label: "Location",
-                      },
-                      {
-                        name: "phone",
-                        type: "tel",
-                        placeholder: "Phone Number",
-                        label: "Phone Number",
-                      },
-                      {
-                        name: "website",
-                        type: "url",
-                        placeholder: "Website (Optional)",
-                        label: "Website (Optional)",
-                      },
-                    ].map((field, index) => (
-                      <motion.div
-                        className="space-y-1"
-                        key={field.name}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 1 + index * 0.1 }}
-                      >
-                        <label className="text-sm font-medium text-gray-700 mb-1 block">
-                          {field.label}
-                        </label>
-                        <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            {getIcon(field.name)}
-                          </div>
-                          <Input
-                            type={field.type}
-                            placeholder={field.placeholder}
-                            value={
-                              ngoDetails[field.name as keyof NGOData] as string
-                            }
-                            onChange={(e) =>
-                              setNgoDetails({
-                                ...ngoDetails,
-                                [field.name]: e.target.value,
-                              })
-                            }
-                            required={field.name !== "website"}
-                            className="pl-10 bg-white border-gray-200 focus:border-green-500 focus:ring-green-500"
-                          />
-                        </div>
-                      </motion.div>
-                    ))}
-
-                    {/* NGO Tags */}
-                    <motion.div
-                      className="space-y-2"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 1.5 }}
-                    >
-                      <label className="text-sm font-medium text-gray-700 block">
-                        Select NGO Categories (at least one)
-                      </label>
-                      {isLoadingTags ? (
-                        <div className="flex justify-center py-4">
-                          <Loader2 className="h-6 w-6 animate-spin text-green-600" />
-                        </div>
-                      ) : tagsData ? (
-                        <div className="flex flex-wrap gap-2 p-3 bg-green-50 rounded-lg">
-                          {tagsData.map((tag) => (
-                            <div
-                              key={tag.id}
-                              className="flex items-center space-x-2"
-                            >
-                              <Checkbox
-                                id={`tag-${tag.id}`}
-                                checked={selectedTags.includes(tag.id)}
-                                onCheckedChange={() => handleTagToggle(tag.id)}
-                                className="border-green-500 text-green-600 focus:ring-green-500"
-                              />
-                              <label
-                                htmlFor={`tag-${tag.id}`}
-                                className="text-sm font-medium cursor-pointer text-gray-700"
-                              >
-                                {tag.name}
-                              </label>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-sm text-red-500">
-                          Failed to load tags. Please try again later.
-                        </div>
-                      )}
-                    </motion.div>
-                  </motion.div>
-                )}
-
-                <motion.div
-                  className="pt-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: userType === "NGO" ? 1.6 : 0.9 }}
-                >
-                  <Button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white py-2.5 rounded-lg transition-all duration-300 flex items-center justify-center group"
-                    disabled={isRegistering}
-                  >
-                    {isRegistering ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        <span>Creating your account...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Create Account</span>
-                        <FaArrowRight className="ml-2 group-hover:translate-x-1 transition-transform duration-300" />
-                      </>
-                    )}
-                  </Button>
-                </motion.div>
-              </form>
-
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: userType === "NGO" ? 1.7 : 1 }}
-                className="pt-2 text-sm text-center text-gray-500"
+                transition={{ delay: 0.7 }}
               >
                 Already have an account?{" "}
                 <Link
@@ -602,25 +345,244 @@ export default function Register() {
                 >
                   Sign in
                 </Link>
+              </motion.p>
+            </CardHeader>
+            <CardContent className="space-y-4 sm:space-y-6 pt-4 sm:pt-6">
+              <Tabs
+                defaultValue="donor"
+                onValueChange={(v) => setUserType(v as "donor" | "NGO")}
+              >
+                <TabsList className="grid grid-cols-2 mb-6">
+                  <TabsTrigger value="donor">Register as Donor</TabsTrigger>
+                  <TabsTrigger value="NGO">Register as NGO</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="donor">
+                  <p className="text-gray-500 mt-2">
+                    Join as a donor to start making a difference today!
+                  </p>
+                </TabsContent>
+
+                <TabsContent value="NGO">
+                  <p className="text-gray-500 mt-2">
+                    Register your NGO to connect with donors and volunteers.
+                  </p>
+                </TabsContent>
+              </Tabs>
+
+              {error && (
+                <motion.div
+                  className="bg-red-50 text-red-500 text-sm p-3 rounded-lg border border-red-100"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  {error}
+                </motion.div>
+              )}
+
+              {/* Common fields */}
+              {[
+                {
+                  name: "username",
+                  type: "text",
+                  placeholder: "Username",
+                  value: username,
+                  onChange: setUsername,
+                  label: "Username",
+                },
+                {
+                  name: "email",
+                  type: "email",
+                  placeholder: "Email address",
+                  value: email,
+                  onChange: setEmail,
+                  label: "Email",
+                },
+                {
+                  name: "password",
+                  type: "password",
+                  placeholder: "Password",
+                  value: password,
+                  onChange: setPassword,
+                  label: "Password",
+                },
+              ].map((field, index) => (
+                <motion.div
+                  className="space-y-1"
+                  key={field.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 + index * 0.1 }}
+                >
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">
+                    {field.label}
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      {getIcon(field.name)}
+                    </div>
+                    <Input
+                      type={field.type}
+                      placeholder={field.placeholder}
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      required
+                      className="pl-10 bg-white border-gray-200 focus:border-green-500 focus:ring-green-500"
+                    />
+                  </div>
+                </motion.div>
+              ))}
+
+              {/* NGO specific fields */}
+              {userType === "NGO" && (
+                <motion.div
+                  className="space-y-5"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.9 }}
+                >
+                  <div className="h-px bg-gray-200 my-2"></div>
+
+                  <div className="text-sm font-medium text-gray-700">
+                    NGO Details
+                  </div>
+
+                  {[
+                    {
+                      name: "name",
+                      type: "text",
+                      placeholder: "NGO Name",
+                      label: "NGO Name",
+                    },
+                    {
+                      name: "description",
+                      type: "text",
+                      placeholder: "Description",
+                      label: "Description",
+                    },
+                    {
+                      name: "location",
+                      type: "text",
+                      placeholder: "Location",
+                      label: "Location",
+                    },
+                    {
+                      name: "phone",
+                      type: "tel",
+                      placeholder: "Phone Number",
+                      label: "Phone Number",
+                    },
+                    {
+                      name: "website",
+                      type: "url",
+                      placeholder: "Website (Optional)",
+                      label: "Website (Optional)",
+                    },
+                  ].map((field, index) => (
+                    <motion.div
+                      className="space-y-1"
+                      key={field.name}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1 + index * 0.1 }}
+                    >
+                      <label className="text-sm font-medium text-gray-700 mb-1 block">
+                        {field.label}
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          {getIcon(field.name)}
+                        </div>
+                        <Input
+                          type={field.type}
+                          placeholder={field.placeholder}
+                          value={
+                            ngoDetails[field.name as keyof NGOData] as string
+                          }
+                          onChange={(e) =>
+                            setNgoDetails({
+                              ...ngoDetails,
+                              [field.name]: e.target.value,
+                            })
+                          }
+                          required={field.name !== "website"}
+                          className="pl-10 bg-white border-gray-200 focus:border-green-500 focus:ring-green-500"
+                        />
+                      </div>
+                    </motion.div>
+                  ))}
+
+                  {/* NGO Tags */}
+                  <motion.div
+                    className="space-y-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.5 }}
+                  >
+                    <label className="text-sm font-medium text-gray-700 block">
+                      Select NGO Categories (at least one)
+                    </label>
+                    {isLoadingTags ? (
+                      <div className="flex justify-center py-4">
+                        <Loader2 className="h-6 w-6 animate-spin text-green-600" />
+                      </div>
+                    ) : tagsData ? (
+                      <div className="flex flex-wrap gap-2 p-3 bg-green-50 rounded-lg">
+                        {tagsData.map((tag) => (
+                          <div
+                            key={tag.id}
+                            className="flex items-center space-x-2"
+                          >
+                            <Checkbox
+                              id={`tag-${tag.id}`}
+                              checked={selectedTags.includes(tag.id)}
+                              onCheckedChange={() => handleTagToggle(tag.id)}
+                              className="border-green-500 text-green-600 focus:ring-green-500"
+                            />
+                            <label
+                              htmlFor={`tag-${tag.id}`}
+                              className="text-sm font-medium cursor-pointer text-gray-700"
+                            >
+                              {tag.name}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-sm text-red-500">
+                        Failed to load tags. Please try again later.
+                      </div>
+                    )}
+                  </motion.div>
+                </motion.div>
+              )}
+
+              <motion.div
+                className="pt-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: userType === "NGO" ? 1.6 : 0.9 }}
+              >
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white py-2.5 rounded-lg transition-all duration-300 flex items-center justify-center group"
+                  disabled={isRegistering}
+                >
+                  {isRegistering ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <span>Creating your account...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Create Account</span>
+                      <FaArrowRight className="ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                    </>
+                  )}
+                </Button>
               </motion.div>
             </CardContent>
           </Card>
-
-          <motion.div
-            className="mt-6 text-center text-sm text-gray-500"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: userType === "NGO" ? 1.8 : 1.1 }}
-          >
-            By creating an account, you agree to our{" "}
-            <Link to="/terms" className="text-green-600 hover:text-green-700">
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link to="/privacy" className="text-green-600 hover:text-green-700">
-              Privacy Policy
-            </Link>
-          </motion.div>
         </motion.div>
       </div>
     </div>

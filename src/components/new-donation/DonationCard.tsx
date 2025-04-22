@@ -28,18 +28,18 @@ export default function DonationCard({
 }: DonationCardInterface) {
   return (
     <Card className="sticky top-4">
-      <CardContent className="pt-6">
+      <CardContent className="pt-4 sm:pt-6">
         <MediaCarousel previews={mediaPreviews} />
 
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <Badge variant="secondary" className="text-sm">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <Badge variant="secondary" className="text-sm mb-2 sm:mb-0">
               {donationType
                 ? donationType.charAt(0) + donationType.slice(1).toLowerCase()
                 : "Type not selected"}
             </Badge>
             {campaignId && (
-              <span className="text-sm text-muted-foreground">
+              <span className="text-xs sm:text-sm text-muted-foreground">
                 Campaign:{" "}
                 {campaigns.find((c) => c.id === parseInt(campaignId))?.name}
               </span>
@@ -47,23 +47,25 @@ export default function DonationCard({
           </div>
 
           <div className="space-y-2">
-            <pre className="text-lg leading-relaxed">
+            <pre className="text-sm sm:text-base md:text-lg leading-relaxed whitespace-pre-wrap">
               {description || "No description provided"}
             </pre>
           </div>
 
-          <div className="flex items-center justify-between py-4 border-t">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 sm:py-4 border-t">
+            <div className="flex items-center gap-2 mb-2 sm:mb-0">
               <MapPin className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">
+              <span className="text-xs sm:text-sm text-muted-foreground">
                 {location || "Location not specified"}
               </span>
             </div>
             <div className="flex items-center gap-4">
               {donationType === "FUNDS" ? (
-                <span className="text-lg font-semibold">₹{amount || "0"}</span>
+                <span className="text-base sm:text-lg font-semibold">
+                  ₹{amount || "0"}
+                </span>
               ) : (
-                <span className="text-lg font-semibold">
+                <span className="text-base sm:text-lg font-semibold">
                   {quantity || "0"} {unit || "units"}
                 </span>
               )}
@@ -89,7 +91,7 @@ function MediaCarousel({
   if (previews.length === 0) return null;
 
   return (
-    <div className="relative rounded-lg overflow-hidden aspect-video mb-6">
+    <div className="relative rounded-lg overflow-hidden aspect-video mb-4 sm:mb-6">
       {previews[currentIndex].type === "image" ? (
         <img
           src={previews[currentIndex].url}
@@ -108,21 +110,21 @@ function MediaCarousel({
         <>
           <button
             onClick={prev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+            className="absolute left-2 top-1/2 -translate-y-1/2 p-1 sm:p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
           <button
             onClick={next}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 sm:p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
             {previews.map((_, index) => (
               <div
                 key={index}
-                className={`w-2 h-2 rounded-full ${
+                className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${
                   index === currentIndex ? "bg-white" : "bg-white/50"
                 }`}
               />
