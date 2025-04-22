@@ -98,7 +98,12 @@ const NewLandingPage: React.FC = () => {
               </div>
               <div className="flex items-center gap-4 mt-12">
                 <div className="flex -space-x-4">
-                  {[1, 2, 3, 4].map((i) => (
+                  {[
+                    "https://images.pexels.com/photos/819530/pexels-photo-819530.jpeg?auto=compress&cs=tinysrgb&w=150&h=750&dpr=1",
+                    "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?q=80&w=1740&auto=format&fit=crop",
+                    "https://images.pexels.com/photos/2331102/pexels-photo-2331102.jpeg?auto=compress&cs=tinysrgb&w=180",
+                    "https://images.pexels.com/photos/13310487/pexels-photo-13310487.jpeg?auto=compress&cs=tinysrgb&w=160",
+                  ].map((image, i) => (
                     <motion.div
                       key={i}
                       className="w-12 h-12 rounded-full border-2 border-white bg-gradient-to-br from-gray-100 to-gray-300 overflow-hidden shadow-md flex items-center justify-center text-green-600 font-semibold"
@@ -109,8 +114,12 @@ const NewLandingPage: React.FC = () => {
                         y: -5,
                         boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
                       }}
+                      style={{
+                        backgroundImage: `url(${image})`,
+                        backgroundSize: "cover",
+                      }}
                     >
-                      {i}
+                      {/* <img className="" src={image} alt="profile" /> */}
                     </motion.div>
                   ))}
                 </div>
@@ -146,7 +155,7 @@ const NewLandingPage: React.FC = () => {
             <div className="absolute -top-6 -right-6 w-24 h-24 bg-green-200 rounded-full z-0 blur-sm opacity-80" />
 
             {/* Floating Elements */}
-            <motion.div
+            {/* <motion.div
               className="absolute top-10 right-10 z-20 w-20 h-20 bg-white rounded-lg shadow-xl flex items-center justify-center p-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -158,7 +167,7 @@ const NewLandingPage: React.FC = () => {
                 alt="Care"
                 className="w-full h-auto"
               />
-            </motion.div>
+            </motion.div> */}
 
             <motion.div
               className="absolute bottom-10 left-0 z-20 bg-white px-4 py-2 rounded-lg shadow-xl text-sm font-medium text-green-600"
@@ -1057,7 +1066,10 @@ const NewLandingPage: React.FC = () => {
             whileHover={{ boxShadow: "0 10px 20px rgba(0, 0, 0, 0.1)" }}
             whileTap={{ scale: 0.98 }}
           >
-            <Link to="/events" className="relative z-10 flex items-center gap-2">
+            <Link
+              to="/events"
+              className="relative z-10 flex items-center gap-2"
+            >
               View All Events
               <FaArrowRight
                 size={14}
@@ -1565,12 +1577,12 @@ const NewLandingPage: React.FC = () => {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
           {[
-            "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", // Children smiling
-            "https://images.unsplash.com/photo-1635928168092-97133762eec4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", // Plantation drive
-            "https://images.unsplash.com/photo-1509099836639-18ba1795216d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", // Elderly support
+            "https://www.goodnet.org/photos/281x197/38071_hd.jpg", // Children smiling
+            "https://www.maasavitringo.org/wp-content/uploads/2024/07/CMP_TP_1.jpg", // Plantation drive
+            "https://www.zorgers.com/assets1.0/images/pages/elder-care-at-home/1E0A5443-min.webp", // Elderly support
             "https://images.unsplash.com/photo-1556484687-30636164638b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", // Education
             "https://images.unsplash.com/photo-1540317700647-ec69694d70d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", // Beach cleanup
-            "https://images.unsplash.com/photo-1593766788306-28561a605abd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", // Community work
+            "https://www.hrresolutions.com/wp-content/uploads/2017/06/volunteer.jpg", // Community work
             "https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", // Helping hands
             "https://images.unsplash.com/photo-1577896851231-70ef18881754?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", // Classroom
           ].map((image, index) => (
@@ -1589,9 +1601,9 @@ const NewLandingPage: React.FC = () => {
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-                <button className="bg-white/80 backdrop-blur-sm text-green-600 px-4 py-2 rounded-full text-sm font-medium transform -translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                {/* <button className="bg-white/80 backdrop-blur-sm text-green-600 px-4 py-2 rounded-full text-sm font-medium transform -translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
                   View Image
-                </button>
+                </button> */}
               </div>
             </motion.div>
           ))}

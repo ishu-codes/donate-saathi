@@ -40,16 +40,20 @@ export function Discover() {
 
   useEffect(() => {
     let cates: string[] = [];
+    // if (ngos) {
+    console.log(ngos);
+    // }
     const newNGOS = ngos?.filter((ngo) => {
       cates = cates.concat(ngo.tags);
       const matchesCategory = selectedCategory
-        ? ngo.tags.includes(selectedCategory)
+        ? ngo.tags?.includes(selectedCategory)
         : true;
       const matchesSearch =
         ngo.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         ngo.description.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesCategory && matchesSearch;
     });
+    console.log(cates);
 
     setFilteredNGOs(newNGOS ?? []);
     setCategories(Array.from(new Set(cates)) ?? []);

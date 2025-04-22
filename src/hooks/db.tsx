@@ -16,7 +16,7 @@ export interface NGORecord {
   phone: string;
   website: string | null;
   tags?: string[];
-  ngo_tag?: NGOTagRecord[];
+  // ngo_tag?: NGOTagRecord[];
 }
 
 // Tag Type
@@ -139,9 +139,21 @@ export function useNgos() {
     queryKey: ["ngo"],
     queryFn: async () => {
       try {
-        const { data, error } = await supabase.from("ngo").select("*");
+        const { data, error } = await supabase
+          .from("ngo")
+          .select(
+            `id, name, description, location, email, phone, website, ngo_tag(tag(name))`
+          );
         if (error) throw error;
-        return data as NGORecord[];
+
+        // Transform the data to include flattened tags array
+        const transformedData = data.map((ngo) => ({
+          ...ngo,
+          // Extract tag names from ngo_tag array and create a flat tags array
+          tags: ngo.ngo_tag?.map((tagObj) => tagObj.tag.name) || [],
+        }));
+
+        return transformedData as NGORecord[];
       } catch (err) {
         console.error("Error fetching NGOs:", err);
         throw err;

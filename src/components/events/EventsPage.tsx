@@ -70,7 +70,7 @@ const events = [
     description:
       "Join our effort to clean local beaches and raise awareness about plastic pollution and marine conservation.",
     image:
-      "https://images.unsplash.com/photo-1622403498309-1e3496cea590?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "https://www.hrresolutions.com/wp-content/uploads/2017/06/volunteer.jpg",
     date: "June 24, 2023",
     time: "7:00 AM - 11:00 AM",
     location: "Juhu Beach, Mumbai",
@@ -135,7 +135,7 @@ const events = [
     description:
       "Help prepare and distribute meals to homeless and underprivileged communities in the city.",
     image:
-      "https://images.unsplash.com/photo-1593113616828-3f21c325ae42?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "https://childvikasfoundation.org/assets/images/food-distribution/2.jpg",
     date: "August 2, 2023",
     time: "7:00 AM - 12:00 PM",
     location: "Central Community Kitchen, Kolkata",
