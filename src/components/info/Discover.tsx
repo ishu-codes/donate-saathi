@@ -437,17 +437,6 @@ export function Discover() {
                       <div className="flex items-center text-xs text-gray-500">
                         <FaRegClock className="mr-1" /> Active Partner
                       </div>
-
-                      <motion.button
-                        className="flex items-center gap-2 px-5 py-2.5 text-white rounded-md shadow-sm transition-all duration-300 bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700"
-                        whileHover={{
-                          scale: 1.05,
-                          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-                        }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        Learn More <FaChevronRight size={12} />
-                      </motion.button>
                     </div>
                   </div>
                 </motion.div>

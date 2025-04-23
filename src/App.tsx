@@ -14,6 +14,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import DashBoard from "./components/dashboard";
 import AboutUs from "./components/info/AboutUs";
 import DonationCampaigns from "./components/campaigns/DonationCampaigns";
+import CreateCampaign from "./components/campaigns/CreateCampaign";
 import FindDonations from "./components/donations/FindDonations";
 import LandingLayout from "./components/landing-page/layout";
 import NewLandingPage from "./components/landing-page/LandingPage";
@@ -68,6 +69,16 @@ function App() {
           <LandingLayout>
             <AboutUs />
           </LandingLayout>
+        }
+      />
+      <Route
+        path="create-campaign"
+        element={
+          <ProtectedRoute>
+            <LandingLayout>
+              <CreateCampaign />
+            </LandingLayout>
+          </ProtectedRoute>
         }
       />
       <Route

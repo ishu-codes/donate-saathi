@@ -363,12 +363,12 @@ const DonationCampaigns: React.FC = () => {
                         <FaHeartbeat className="text-red-500" />{" "}
                         {Math.floor(campaign.completed / 100)} donors
                       </span>
-                      <motion.button
-                        className={`flex items-center gap-2 px-4 py-2 text-white rounded-md shadow-sm transition-all duration-300 bg-gradient-to-r from-green-600 to-green-700 hover:shadow-lg transform hover:-translate-y-1`}
-                        whileTap={{ scale: 0.98 }}
+                      <Link
+                        to={`/new-donation?campaignId=${campaign.id}`}
+                        className="flex items-center gap-2 px-4 py-2 text-white rounded-md shadow-sm transition-all duration-300 bg-gradient-to-r from-green-600 to-green-700 hover:shadow-lg transform hover:-translate-y-1"
                       >
                         Donate Now <FaArrowRight size={12} />
-                      </motion.button>
+                      </Link>
                     </div>
                   </div>
                 </motion.div>

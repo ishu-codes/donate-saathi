@@ -27,7 +27,7 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DonationCard from "./DonationCard";
 import { useCreateDonation } from "@/hooks/db";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 // Update the form schema to match our requirements
 const formSchema = z.object({
@@ -55,7 +55,12 @@ export default function NewDonation() {
   );
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const createDonation = useCreateDonation();
+  
+  // Get campaignId from URL query parameters
+  const queryParams = new URLSearchParams(location.search);
+  const campaignIdFromUrl = queryParams.get('campaignId');
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -66,6 +71,7 @@ export default function NewDonation() {
       quantity: 1,
       unit: "",
       amount: "",
+      campaign_id: campaignIdFromUrl || undefined,
     },
   });
 
@@ -194,11 +200,21 @@ export default function NewDonation() {
         .from("campaign")
         .select("id, name");
 
-      if (campaignsData) setCampaigns(campaignsData);
+      if (campaignsData) {
+        setCampaigns(campaignsData);
+        
+        // If campaignId is in URL and exists in the fetched campaigns, set it in the form
+        if (campaignIdFromUrl) {
+          const campaign = campaignsData.find(c => c.id.toString() === campaignIdFromUrl);
+          if (campaign) {
+            form.setValue("campaign_id", campaignIdFromUrl);
+          }
+        }
+      }
     };
 
     fetchCampaigns();
-  }, []);
+  }, [campaignIdFromUrl, form]);
 
   return (
     <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
